@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Know Your Skill</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { background-color: #f0f4f8; font-family: 'Arial', sans-serif; }
+        .container { max-width: 800px; }
+        .card { border: none; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .card-header { background: linear-gradient(135deg, #007bff, #00bfff); color: white; font-weight: bold; }
+        .form-check-label { font-size: 0.95rem; }
+        .btn-primary { background-color: #007bff; border: none; }
+        .btn-primary:hover { background-color: #0056b3; }
+        h2, h3 { color: #007bff; }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header"><i class="bi bi-lightbulb-fill me-2"></i>Know Your Skill Quiz</div>
+        <div class="card-body">
+            <p class="lead">This quiz is designed to assess your interests and behaviors to recommend a suitable corporate field, trending roles, and skills/courses you should learn to advance your career.</p>
+            <h2 class="mb-4"><i class="bi bi-person-fill me-2"></i>Candidate Details</h2>
+            <form method="POST">
+                <div class="row mb-3">
+                    <div class="col"><input type="text" class="form-control" name="name" placeholder="Name" required></div>
+                    <div class="col"><input type="number" class="form-control" name="age" placeholder="Age" min="0" required></div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col"><input type="text" class="form-control" name="contact" placeholder="Contact No" required></div>
+                    <div class="col"><input type="email" class="form-control" name="email" placeholder="Email (e.g., example@domain.com)" required></div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col"><input type="text" class="form-control" name="profession" placeholder="Profession" required></div>
+                    <div class="col"><input type="number" class="form-control" name="experience" placeholder="Years of Experience" min="0" required></div>
+                </div>
+                <div class="mb-4"><input type="text" class="form-control" name="interest_area" placeholder="Area of Interest" required></div>
+
+                <h3 class="mb-3"><i class="bi bi-question-circle-fill me-2"></i>Quiz Questions</h3>
+                <div class="mb-3">
+                    <label class="form-label">Q1. Which activity appeals to you most? (Behavioral)</label><br>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q1" value="Creating campaigns to promote products" required>
+                        <label class="form-check-label">Creating campaigns to promote products</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q1" value="Building relationships with clients">
+                        <label class="form-check-label">Building relationships with clients</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q1" value="Recruiting and interviewing candidates">
+                        <label class="form-check-label">Recruiting and interviewing candidates</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q1" value="Streamlining processes for efficiency">
+                        <label class="form-check-label">Streamlining processes for efficiency</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q1" value="Preparing financial reports and budgets">
+                        <label class="form-check-label">Preparing financial reports and budgets</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q1" value="Troubleshooting technical issues">
+                        <label class="form-check-label">Troubleshooting technical issues</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q1" value="Defining product roadmaps">
+                        <label class="form-check-label">Defining product roadmaps</label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Q2. What task do you enjoy in team settings? (Behavioral)</label><br>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q2" value="Analyzing customer trends and feedback" required>
+                        <label class="form-check-label">Analyzing customer trends and feedback</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q2" value="Negotiating deals and contracts">
+                        <label class="form-check-label">Negotiating deals and contracts</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q2" value="Managing employee training programs">
+                        <label class="form-check-label">Managing employee training programs</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q2" value="Managing supply chain logistics">
+                        <label class="form-check-label">Managing supply chain logistics</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q2" value="Analyzing investment opportunities">
+                        <label class="form-check-label">Analyzing investment opportunities</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q2" value="Implementing software solutions">
+                        <label class="form-check-label">Implementing software solutions</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q2" value="Gathering user requirements">
+                        <label class="form-check-label">Gathering user requirements</label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Q3. Which goal motivates you daily? (Behavioral)</label><br>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q3" value="Developing brand strategies and content" required>
+                        <label class="form-check-label">Developing brand strategies and content</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q3" value="Meeting sales targets and quotas">
+                        <label class="form-check-label">Meeting sales targets and quotas</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q3" value="Handling performance reviews">
+                        <label class="form-check-label">Handling performance reviews</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q3" value="Coordinating project timelines">
+                        <label class="form-check-label">Coordinating project timelines</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q3" value="Managing accounts and audits">
+                        <label class="form-check-label">Managing accounts and audits</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q3" value="Managing network security">
+                        <label class="form-check-label">Managing network security</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q3" value="Prioritizing features for development">
+                        <label class="form-check-label">Prioritizing features for development</label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Q4. What problem-solving excites you? (Behavioral)</label><br>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q4" value="Planning events and partnerships" required>
+                        <label class="form-check-label">Planning events and partnerships</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q4" value="Presenting products to potential buyers">
+                        <label class="form-check-label">Presenting products to potential buyers</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q4" value="Resolving workplace conflicts">
+                        <label class="form-check-label">Resolving workplace conflicts</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q4" value="Optimizing inventory levels">
+                        <label class="form-check-label">Optimizing inventory levels</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q4" value="Forecasting financial trends">
+                        <label class="form-check-label">Forecasting financial trends</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q4" value="Supporting user technology needs">
+                        <label class="form-check-label">Supporting user technology needs</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q4" value="Conducting market analysis">
+                        <label class="form-check-label">Conducting market analysis</label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Q5. Which collaboration style suits you? (Behavioral)</label><br>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q5" value="Measuring campaign success with metrics" required>
+                        <label class="form-check-label">Measuring campaign success with metrics</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q5" value="Handling customer objections">
+                        <label class="form-check-label">Handling customer objections</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q5" value="Developing company policies">
+                        <label class="form-check-label">Developing company policies</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q5" value="Ensuring quality control">
+                        <label class="form-check-label">Ensuring quality control</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q5" value="Handling tax compliance">
+                        <label class="form-check-label">Handling tax compliance</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q5" value="Developing custom applications">
+                        <label class="form-check-label">Developing custom applications</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q5" value="Collaborating with design teams">
+                        <label class="form-check-label">Collaborating with design teams</label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Q6. Which technical tool do you prefer? (Technical)</label><br>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q6" value="Managing social media and advertising" required>
+                        <label class="form-check-label">Managing social media and advertising tools</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q6" value="Following up on leads">
+                        <label class="form-check-label">CRM tools for lead tracking</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q6" value="Organizing team-building activities">
+                        <label class="form-check-label">HR software for scheduling</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q6" value="Handling vendor relationships">
+                        <label class="form-check-label">ERP systems for vendor management</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q6" value="Overseeing cash flow">
+                        <label class="form-check-label">Financial software (e.g., QuickBooks)</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q6" value="Maintaining hardware systems">
+                        <label class="form-check-label">IT hardware diagnostic tools</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q6" value="Testing product prototypes">
+                        <label class="form-check-label">Product testing platforms</label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Q7. Which technical process interests you? (Technical)</label><br>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q7" value="Conducting market research studies" required>
+                        <label class="form-check-label">Market research software</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q7" value="Organizing sales demos">
+                        <label class="form-check-label">Sales demo presentation tools</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q7" value="Overseeing payroll and benefits">
+                        <label class="form-check-label">Payroll management systems</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q7" value="Monitoring operational metrics">
+                        <label class="form-check-label">Operations analytics tools</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q7" value="Evaluating financial risks">
+                        <label class="form-check-label">Risk assessment software</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q7" value="Conducting system upgrades">
+                        <label class="form-check-label">IT upgrade management tools</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q7" value="Launching new products">
+                        <label class="form-check-label">Product launch platforms</label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Q8. Which technical skill do you want to master? (Technical)</label><br>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q8" value="Designing promotional materials" required>
+                        <label class="form-check-label">Graphic design software</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q8" value="Tracking sales performance">
+                        <label class="form-check-label">Sales analytics tools</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q8" value="Promoting diversity and inclusion">
+                        <label class="form-check-label">HR diversity training tools</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q8" value="Implementing process improvements">
+                        <label class="form-check-label">Process optimization software</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q8" value="Creating financial models">
+                        <label class="form-check-label">Financial modeling tools</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q8" value="Ensuring data backups">
+                        <label class="form-check-label">Backup management tools</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q8" value="Collecting user feedback">
+                        <label class="form-check-label">User feedback platforms</label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Q9. Which technical task excites you? (Technical)</label><br>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q9" value="Collaborating with influencers" required>
+                        <label class="form-check-label">Influencer collaboration tools</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q9" value="Upselling and cross-selling">
+                        <label class="form-check-label">Upselling analytics tools</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q9" value="Conducting exit interviews">
+                        <label class="form-check-label">HR exit interview software</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q9" value="Coordinating cross-team efforts">
+                        <label class="form-check-label">Team coordination tools</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q9" value="Advising on cost reductions">
+                        <label class="form-check-label">Cost analysis tools</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q9" value="Integrating new technologies">
+                        <label class="form-check-label">Tech integration platforms</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q9" value="Iterating on product improvements">
+                        <label class="form-check-label">Product iteration tools</label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Q10. Which technical challenge would you tackle? (Technical)</label><br>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q10" value="Optimizing SEO and online presence" required>
+                        <label class="form-check-label">SEO optimization tools</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q10" value="Attending trade shows">
+                        <label class="form-check-label">Trade show management software</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q10" value="Supporting employee well-being">
+                        <label class="form-check-label">Wellness program software</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q10" value="Managing daily workflows">
+                        <label class="form-check-label">Workflow management tools</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q10" value="Tracking expenses and revenues">
+                        <label class="form-check-label">Expense tracking software</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q10" value="Providing IT training">
+                        <label class="form-check-label">IT training platforms</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="q10" value="Aligning product with business goals">
+                        <label class="form-check-label">Product alignment tools</label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle-fill me-2"></i>Submit Quiz</button>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
