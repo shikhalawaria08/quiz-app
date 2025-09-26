@@ -1,10 +1,43 @@
+# Ignore Python cache and compiled files
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.py[cod]
+
+# Ignore virtual environments
 .Python
 env/
 venv/
+.venv
+ENV/
+env.bak/
+venv.bak/
+
+# Ignore sensitive and local files
 credentials.json
 *.txt
 *.xlsx
+
+# Ignore logs and temporary files
+*.log
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Ignore test and coverage reports
+htmlcov/
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+
+# Ignore IDE and editor files
+.idea/
+.vscode/
+
+# Ignore Python packaging and build artifacts
+build/
+dist/
+*.egg-info/
+*.egg
+MANIFEST
