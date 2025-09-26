@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, flash
 import gspread
 from google.oauth2.service_account import Credentials
+import os
+import json
 import time
 from datetime import datetime
 
@@ -22,7 +24,6 @@ option_to_field = {
     "Designing promotional materials": "Marketing",
     "Collaborating with influencers": "Marketing",
     "Optimizing SEO and online presence": "Marketing",
-
     "Building relationships with clients": "Sales",
     "Negotiating deals and contracts": "Sales",
     "Meeting sales targets and quotas": "Sales",
@@ -33,7 +34,6 @@ option_to_field = {
     "Tracking sales performance": "Sales",
     "Upselling and cross-selling": "Sales",
     "Attending trade shows": "Sales",
-
     "Recruiting and interviewing candidates": "HR",
     "Managing employee training programs": "HR",
     "Handling performance reviews": "HR",
@@ -44,7 +44,6 @@ option_to_field = {
     "Promoting diversity and inclusion": "HR",
     "Conducting exit interviews": "HR",
     "Supporting employee well-being": "HR",
-
     "Streamlining processes for efficiency": "Operations",
     "Managing supply chain logistics": "Operations",
     "Coordinating project timelines": "Operations",
@@ -55,7 +54,6 @@ option_to_field = {
     "Implementing process improvements": "Operations",
     "Coordinating cross-team efforts": "Operations",
     "Managing daily workflows": "Operations",
-
     "Preparing financial reports and budgets": "Finance",
     "Analyzing investment opportunities": "Finance",
     "Managing accounts and audits": "Finance",
@@ -66,7 +64,6 @@ option_to_field = {
     "Creating financial models": "Finance",
     "Advising on cost reductions": "Finance",
     "Tracking expenses and revenues": "Finance",
-
     "Troubleshooting technical issues": "IT",
     "Implementing software solutions": "IT",
     "Managing network security": "IT",
@@ -77,7 +74,6 @@ option_to_field = {
     "Ensuring data backups": "IT",
     "Integrating new technologies": "IT",
     "Providing IT training": "IT",
-
     "Defining product roadmaps": "Product",
     "Gathering user requirements": "Product",
     "Prioritizing features for development": "Product",
@@ -129,19 +125,18 @@ field_details = {
     }
 }
 
-# Set up Google Sheets client (runs once)
+# Set up Google Sheets client using Render environment variable
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
-creds = Credentials.from_service_account_file('credentials.json', scopes=SCOPES)
+creds_info = json.loads(os.environ['GOOGLE_CREDENTIALS'])
+creds = Credentials.from_service_account_info(creds_info, scopes=SCOPES)
 client = gspread.authorize(creds)
 
 @app.route('/', methods=['GET', 'POST'])
 def quiz():
     save_error = None
     if request.method == 'POST':
-        # Get client IP (simplistic; use with caution in production)
+        # (All your existing POST handling code stays the same)
         client_ip = request.remote_addr
-        
-        # Get form data
         name = request.form['name']
         age = request.form['age']
         contact = request.form['contact']
@@ -149,41 +144,28 @@ def quiz():
         profession = request.form['profession']
         experience = request.form['experience']
         interest_area = request.form['interest_area']
-        
-        # Collect answers for all 10 questions
         answers = {f'q{i}': request.form.get(f'q{i}') for i in range(1, 11)}
         
-        # Count votes for each field based on descriptive options
         fields = ['Marketing', 'Sales', 'HR', 'Operations', 'Finance', 'IT', 'Product']
         votes = {field: 0 for field in fields}
-        
         for i in range(1, 11):
             answer = request.form.get(f'q{i}')
             if answer in option_to_field:
-                field = option_to_field[answer]
-                votes[field] += 1
+                votes[option_to_field[answer]] += 1
         
-        # Find the field with the most votes
         recommended_field = max(votes, key=votes.get)
-        
-        # Get details for the recommended field
         details = field_details[recommended_field]
-        
-        # Check for duplicate submission (within 1 second)
         current_time = time.time()
+
         if client_ip in recent_submissions:
             last_time, last_hash = recent_submissions[client_ip]
-            if current_time - last_time < 1:  # 1-second window
+            if current_time - last_time < 1:
                 save_error = "Duplicate submission detected. Data was not saved again."
-                print("Duplicate submission skipped.")
             else:
-                # Update recent submissions
-                data_hash = hash(str(answers))  # Simple hash of answers
-                if last_hash == data_hash and current_time - last_time < 5:  # 5-second duplicate check
+                data_hash = hash(str(answers))
+                if last_hash == data_hash and current_time - last_time < 5:
                     save_error = "Duplicate submission detected. Data was not saved again."
-                    print("Duplicate submission skipped.")
                 else:
-                    # Save to Google Sheets
                     try:
                         spreadsheet = client.open("Quiz responses")
                         sheet = spreadsheet.worksheet("Quiz Responses")
@@ -194,19 +176,10 @@ def quiz():
                             recommended_field
                         ]
                         sheet.append_row(row_data)
-                        print("Data saved to Google Sheets successfully!")
                         recent_submissions[client_ip] = (current_time, data_hash)
-                    except gspread.WorksheetNotFound:
-                        save_error = "Worksheet 'Quiz Responses' not found. Please ensure the sheet tab is named 'Quiz Responses' exactly."
-                    except gspread.exceptions.APIError as api_err:
-                        if "storageQuotaExceeded" in str(api_err):
-                            save_error = "Storage quota exceeded for service account. Data wasn't saved this time."
-                        else:
-                            save_error = f"API Error: {api_err}"
                     except Exception as e:
                         save_error = f"Error saving data: {e}"
         else:
-            # First submission for this IP
             try:
                 spreadsheet = client.open("Quiz responses")
                 sheet = spreadsheet.worksheet("Quiz Responses")
@@ -217,19 +190,10 @@ def quiz():
                     recommended_field
                 ]
                 sheet.append_row(row_data)
-                print("Data saved to Google Sheets successfully!")
                 recent_submissions[client_ip] = (current_time, hash(str(answers)))
-            except gspread.WorksheetNotFound:
-                save_error = "Worksheet 'Quiz Responses' not found. Please ensure the sheet tab is named 'Quiz Responses' exactly."
-            except gspread.exceptions.APIError as api_err:
-                if "storageQuotaExceeded" in str(api_err):
-                    save_error = "Storage quota exceeded for service account. Data wasn't saved this time."
-                else:
-                    save_error = f"API Error: {api_err}"
             except Exception as e:
                 save_error = f"Error saving data: {e}"
-        
-        # Render result page with optional error message
+
         return render_template('result.html', name=name, recommended_field=recommended_field, details=details, save_error=save_error)
     
     return render_template('quiz_bootstrap.html')
