@@ -8,11 +8,50 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <style>
-        body { background-color: #f8f9fa; }
-        .quiz-container { max-width: 800px; margin: 50px auto; padding: 30px; background: white; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
-        .progress { height: 10px; margin-bottom: 20px; }
-        .question { display: none; }
+        body {
+            background-image: url('https://images.unsplash.com/photo-1506784897976-cb7bcaaef3de?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #0056b3;
+            font-family: 'Arial', sans-serif;
+        }
+        .quiz-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 1s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .progress { height: 10px; margin-bottom: 20px; background-color: #cce5ff; }
+        .progress-bar { background-color: #007BFF; }
+        .question { display: none; animation: slideIn 0.5s ease; }
         .question.active { display: block; }
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .form-select, .form-control { border-color: #007BFF; }
+        .btn-primary { background-color: #0056b3; border-color: #0056b3; }
+        .btn-primary:hover { background-color: #004085; border-color: #004085; }
+        .alert-success { background-color: #d4edda; border-color: #c3e6cb; color: #155724; }
+        .alert-danger { background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; }
+        .contact-info {
+            text-align: center;
+            padding: 10px;
+            background-color: #cce5ff;
+            color: #0056b3;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -90,7 +129,7 @@
                     <label class="form-label">{{ questions[i] }}</label>
                     <select name="q{{ i + 1 }}" class="form-select" required>
                         <option value="" disabled selected>Choose one</option>
-                        {% for option in options %}
+                        {% for option in question_options[i] %}
                         <option value="{{ option }}">{{ option }}</option>
                         {% endfor %}
                     </select>
@@ -100,6 +139,9 @@
             <div class="progress"><div id="progressBar" class="progress-bar" style="width: 0%;"></div></div>
             {{ form.submit(class="btn btn-primary w-100 mt-3") }}
         </form>
+    </div>
+    <div class="contact-info">
+        Created by Shikha Lawaria | Email: <a href="mailto:shikhalawaria248@gmail.com" style="color: #0056b3;">shikhalawaria248@gmail.com</a>
     </div>
     <script>
         $(document).ready(function() {
