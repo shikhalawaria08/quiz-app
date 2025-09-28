@@ -11,78 +11,118 @@ from wtforms.validators import DataRequired, Email, NumberRange, Regexp
 app = Flask(__name__)
 app.secret_key = 'quiz_secret_key'  # For flash and forms
 
-# Simplified option_to_field with less technical language
+# Unique options for each question, limited to 10 per question
 option_to_field = {
-    "Coming up with ad ideas for products": "Marketing",
-    "Looking at what customers like and say": "Marketing",
-    "Planning brand ideas and content": "Marketing",
-    "Setting up events and team-ups": "Marketing",
-    "Checking how well ads work with numbers": "Marketing",
-    "Handling social media and ads": "Marketing",
-    "Doing studies on what people buy": "Marketing",
-    "Making posters and promo stuff": "Marketing",
-    "Working with online influencers": "Marketing",
-    "Making websites show up better in searches": "Marketing",
-    "Making friends with customers": "Sales",
-    "Talking out deals and agreements": "Sales",
-    "Hitting sales goals": "Sales",
-    "Showing products to buyers": "Sales",
-    "Dealing with customer no's": "Sales",
-    "Checking in on potential customers": "Sales",
-    "Setting up product shows": "Sales",
-    "Keeping track of sales numbers": "Sales",
-    "Selling more or extra items": "Sales",
-    "Going to business fairs": "Sales",
-    "Finding and talking to new hires": "HR",
-    "Running training for staff": "HR",
-    "Doing check-ins on work performance": "HR",
-    "Fixing arguments at work": "HR",
-    "Making rules for the company": "HR",
-    "Planning fun team activities": "HR",
-    "Handling pay and perks": "HR",
-    "Encouraging different backgrounds at work": "HR",
-    "Talking to people leaving the job": "HR",
-    "Helping staff feel good": "HR",
-    "Making work faster and better": "Operations",
-    "Handling deliveries and supplies": "Operations",
-    "Planning when things get done": "Operations",
-    "Keeping the right amount of stock": "Operations",
-    "Checking for good quality": "Operations",
-    "Dealing with suppliers": "Operations",
-    "Watching work numbers": "Operations",
-    "Adding better ways to do things": "Operations",
-    "Teamwork across groups": "Operations",
-    "Running daily tasks": "Operations",
-    "Making money reports and plans": "Finance",
-    "Looking at places to put money": "Finance",
-    "Handling money records and checks": "Finance",
-    "Guessing future money trends": "Finance",
-    "Dealing with taxes": "Finance",
-    "Watching money coming in and out": "Finance",
-    "Checking for money risks": "Finance",
-    "Building money plans": "Finance",
-    "Giving tips to save money": "Finance",
-    "Tracking costs and earnings": "Finance",
-    "Fixing computer problems": "IT",
-    "Setting up new software": "IT",
-    "Keeping networks safe": "IT",
-    "Helping with tech issues": "IT",
-    "Making new apps": "IT",
-    "Taking care of computers": "IT",
+    # Question 1: What do you enjoy most in a work setting?
+    "Brainstorming creative campaigns": "Marketing",
+    "Building customer relationships": "Sales",
+    "Organizing team events": "HR",
+    "Optimizing workflows": "Operations",
+    "Analyzing financial data": "Finance",
+    "Coding new features": "IT",
+    "Designing product features": "Product",
+    "Collaborating with teams": "Operations",
+    "Managing budgets": "Finance",
+    "Securing networks": "IT",
+    # Question 2: Which task excites you the most?
+    "Creating ad visuals": "Marketing",
+    "Closing sales deals": "Sales",
+    "Recruiting talent": "HR",
+    "Managing supply chains": "Operations",
+    "Forecasting revenue": "Finance",
+    "Debugging software": "IT",
+    "Testing product prototypes": "Product",
+    "Streamlining processes": "Operations",
+    "Investing funds": "Finance",
+    "Building apps": "IT",
+    # Question 3: What type of work do you find most rewarding?
+    "Launching marketing strategies": "Marketing",
+    "Negotiating contracts": "Sales",
+    "Training employees": "HR",
+    "Ensuring quality control": "Operations",
+    "Preparing tax reports": "Finance",
+    "Setting up servers": "IT",
+    "Planning product launches": "Product",
+    "Coordinating logistics": "Operations",
+    "Assessing risks": "Finance",
     "Updating systems": "IT",
-    "Backing up data": "IT",
-    "Adding new tech": "IT",
-    "Teaching tech skills": "IT",
-    "Planning what products to make": "Product",
-    "Asking what users need": "Product",
-    "Picking what features to add": "Product",
-    "Studying the market": "Product",
-    "Working with designers": "Product",
-    "Testing new versions": "Product",
-    "Releasing new items": "Product",
-    "Getting user opinions": "Product",
-    "Improving products": "Product",
-    "Matching products to company goals": "Product"
+    # Question 4: Which activity aligns with your strengths?
+    "Crafting social media posts": "Marketing",
+    "Presenting to clients": "Sales",
+    "Resolving conflicts": "HR",
+    "Scheduling deliveries": "Operations",
+    "Balancing books": "Finance",
+    "Writing code": "IT",
+    "Gathering user feedback": "Product",
+    "Monitoring performance": "Operations",
+    "Advising on investments": "Finance",
+    "Ensuring data security": "IT",
+    # Question 5: What do you prefer working on daily?
+    "Running ad campaigns": "Marketing",
+    "Following up with leads": "Sales",
+    "Developing HR policies": "HR",
+    "Overseeing inventory": "Operations",
+    "Reviewing expenses": "Finance",
+    "Maintaining networks": "IT",
+    "Defining product goals": "Product",
+    "Improving efficiency": "Operations",
+    "Creating financial plans": "Finance",
+    "Supporting tech users": "IT",
+    # Question 6: Which role sounds most appealing to you?
+    "Brand strategist": "Marketing",
+    "Account manager": "Sales",
+    "Talent scout": "HR",
+    "Operations coordinator": "Operations",
+    "Financial analyst": "Finance",
+    "Systems admin": "IT",
+    "Product owner": "Product",
+    "Supply chain lead": "Operations",
+    "Treasury officer": "Finance",
+    "Cybersecurity expert": "IT",
+    # Question 7: What kind of project would you lead?
+    "Marketing event": "Marketing",
+    "Sales pitch": "Sales",
+    "Employee onboarding": "HR",
+    "Process improvement": "Operations",
+    "Budget planning": "Finance",
+    "Software upgrade": "IT",
+    "Product roadmap": "Product",
+    "Warehouse setup": "Operations",
+    "Investment strategy": "Finance",
+    "Network rollout": "IT",
+    # Question 8: Which skill do you want to develop?
+    "SEO techniques": "Marketing",
+    "Sales forecasting": "Sales",
+    "Leadership training": "HR",
+    "Lean management": "Operations",
+    "Financial modeling": "Finance",
+    "Python programming": "IT",
+    "User experience design": "Product",
+    "Vendor negotiation": "Operations",
+    "Risk analysis": "Finance",
+    "Cloud computing": "IT",
+    # Question 9: What motivates your career choices?
+    "Creative impact": "Marketing",
+    "Earning commissions": "Sales",
+    "Team growth": "HR",
+    "Operational success": "Operations",
+    "Profit growth": "Finance",
+    "Tech innovation": "IT",
+    "Customer satisfaction": "Product",
+    "Resource optimization": "Operations",
+    "Wealth creation": "Finance",
+    "System reliability": "IT",
+    # Question 10: Which task feels most natural to you?
+    "Writing content": "Marketing",
+    "Building client trust": "Sales",
+    "Mediating disputes": "HR",
+    "Tracking shipments": "Operations",
+    "Auditing accounts": "Finance",
+    "Troubleshooting tech": "IT",
+    "Iterating products": "Product",
+    "Managing deadlines": "Operations",
+    "Evaluating investments": "Finance",
+    "Securing databases": "IT"
 }
 
 # Field details remain the same
@@ -160,7 +200,49 @@ def quiz():
         "What motivates your career choices?",
         "Which task feels most natural to you?"
     ]
-    options = list(option_to_field.keys())  # Simplified options
+    # Dynamic options for each question
+    question_options = [
+        [opt for opt in option_to_field.keys() if "Question 1" in opt or opt in [
+            "Brainstorming creative campaigns", "Building customer relationships", "Organizing team events",
+            "Optimizing workflows", "Analyzing financial data", "Coding new features", "Designing product features",
+            "Collaborating with teams", "Managing budgets", "Securing networks"]],
+        [opt for opt in option_to_field.keys() if "Question 2" in opt or opt in [
+            "Creating ad visuals", "Closing sales deals", "Recruiting talent", "Managing supply chains",
+            "Forecasting revenue", "Debugging software", "Testing product prototypes", "Streamlining processes",
+            "Investing funds", "Building apps"]],
+        [opt for opt in option_to_field.keys() if "Question 3" in opt or opt in [
+            "Launching marketing strategies", "Negotiating contracts", "Training employees",
+            "Ensuring quality control", "Preparing tax reports", "Setting up servers", "Planning product launches",
+            "Coordinating logistics", "Assessing risks", "Updating systems"]],
+        [opt for opt in option_to_field.keys() if "Question 4" in opt or opt in [
+            "Crafting social media posts", "Presenting to clients", "Resolving conflicts", "Scheduling deliveries",
+            "Balancing books", "Writing code", "Gathering user feedback", "Monitoring performance",
+            "Advising on investments", "Ensuring data security"]],
+        [opt for opt in option_to_field.keys() if "Question 5" in opt or opt in [
+            "Running ad campaigns", "Following up with leads", "Developing HR policies", "Overseeing inventory",
+            "Reviewing expenses", "Maintaining networks", "Defining product goals", "Improving efficiency",
+            "Creating financial plans", "Supporting tech users"]],
+        [opt for opt in option_to_field.keys() if "Question 6" in opt or opt in [
+            "Brand strategist", "Account manager", "Talent scout", "Operations coordinator",
+            "Financial analyst", "Systems admin", "Product owner", "Supply chain lead",
+            "Treasury officer", "Cybersecurity expert"]],
+        [opt for opt in option_to_field.keys() if "Question 7" in opt or opt in [
+            "Marketing event", "Sales pitch", "Employee onboarding", "Process improvement",
+            "Budget planning", "Software upgrade", "Product roadmap", "Warehouse setup",
+            "Investment strategy", "Network rollout"]],
+        [opt for opt in option_to_field.keys() if "Question 8" in opt or opt in [
+            "SEO techniques", "Sales forecasting", "Leadership training", "Lean management",
+            "Financial modeling", "Python programming", "User experience design", "Vendor negotiation",
+            "Risk analysis", "Cloud computing"]],
+        [opt for opt in option_to_field.keys() if "Question 9" in opt or opt in [
+            "Creative impact", "Earning commissions", "Team growth", "Operational success",
+            "Profit growth", "Tech innovation", "Customer satisfaction", "Resource optimization",
+            "Wealth creation", "System reliability"]],
+        [opt for opt in option_to_field.keys() if "Question 10" in opt or opt in [
+            "Writing content", "Building client trust", "Mediating disputes", "Tracking shipments",
+            "Auditing accounts", "Troubleshooting tech", "Iterating products", "Managing deadlines",
+            "Evaluating investments", "Securing databases"]]
+    ]
 
     if request.method == 'POST':
         if form.validate_on_submit():
@@ -231,7 +313,7 @@ def quiz():
         else:
             flash("Please correct the errors in the form.", "danger")
 
-    return render_template('quiz_bootstrap.html', form=form, questions=questions, options=options)
+    return render_template('quiz_bootstrap.html', form=form, questions=questions, question_options=question_options)
 
 if __name__ == '__main__':
     app.run(debug=True)
