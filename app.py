@@ -207,6 +207,7 @@ class QuizForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email(message="Invalid email address")])
     profession = StringField('Profession', validators=[DataRequired()])
     experience = SelectField('No. of Years of Experience', validators=[DataRequired()], choices=[
+        ('', 'Select Experience'),
         ('Fresher', 'Fresher'),
         ('less than 1 year', 'less than 1 year'),
         ('1-3 years', '1-3 years'),
@@ -374,25 +375,13 @@ def quiz():
             return render_template('quiz_bootstrap.html', form=form, questions=questions, question_options=question_options)
 
     # Pre-fill form from session on GET or failed POST
-    if 'name' in session:
-        form.name.data = session.get('name', '')
-    if 'age' in session:
-        form.age.data = session.get('age', '')
-    if 'contact' in session:
-        form.contact.data = session.get('contact', '')
-    if 'email' in session:
-        form.email.data = session.get('email', '')
-    if 'profession' in session:
-        form.profession.data = session.get('profession', '')
-    if 'experience' in session:
-        form.experience.data = session.get('experience', '')
-    if 'interest_area' in session:
-        form.interest_area.data = session.get('interest_area', '')
-    for i in range(1, 11):
-        if f'q{i}' in session:
-            # This is a workaround since WTForms doesn't directly support pre-selecting options in a dynamic select
-            # We'll handle it via JavaScript for the questions
-            pass
+    form.name.data = session.get('name', '')
+    form.age.data = session.get('age', '')
+    form.contact.data = session.get('contact', '')
+    form.email.data = session.get('email', '')
+    form.profession.data = session.get('profession', '')
+    form.experience.data = session.get('experience', '')
+    form.interest_area.data = session.get('interest_area', '')
 
     return render_template('quiz_bootstrap.html', form=form, questions=questions, question_options=question_options)
 
