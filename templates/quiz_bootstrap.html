@@ -79,49 +79,49 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         {{ form.name.label(class="form-label") }}
-                        {{ form.name(class="form-control", value=session.get('name', '')) }}
+                        {{ form.name(class="form-control") }}
                         {% for error in form.name.errors %}
                             <div class="text-danger">{{ error }}</div>
                         {% endfor %}
                     </div>
                     <div class="col-md-6 mb-3">
                         {{ form.age.label(class="form-label") }}
-                        {{ form.age(class="form-control", value=session.get('age', '')) }}
+                        {{ form.age(class="form-control") }}
                         {% for error in form.age.errors %}
                             <div class="text-danger">{{ error }}</div>
                         {% endfor %}
                     </div>
                     <div class="col-md-6 mb-3">
                         {{ form.contact.label(class="form-label") }}
-                        {{ form.contact(class="form-control", value=session.get('contact', '')) }}
+                        {{ form.contact(class="form-control") }}
                         {% for error in form.contact.errors %}
                             <div class="text-danger">{{ error }}</div>
                         {% endfor %}
                     </div>
                     <div class="col-md-6 mb-3">
                         {{ form.email.label(class="form-label") }}
-                        {{ form.email(class="form-control", value=session.get('email', '')) }}
+                        {{ form.email(class="form-control") }}
                         {% for error in form.email.errors %}
                             <div class="text-danger">{{ error }}</div>
                         {% endfor %}
                     </div>
                     <div class="col-md-6 mb-3">
                         {{ form.profession.label(class="form-label") }}
-                        {{ form.profession(class="form-control", value=session.get('profession', '')) }}
+                        {{ form.profession(class="form-control") }}
                         {% for error in form.profession.errors %}
                             <div class="text-danger">{{ error }}</div>
                         {% endfor %}
                     </div>
                     <div class="col-md-6 mb-3">
                         {{ form.experience.label(class="form-label") }}
-                        {{ form.experience(class="form-select", value=session.get('experience', '')) }}
+                        {{ form.experience(class="form-select") }}
                         {% for error in form.experience.errors %}
                             <div class="text-danger">{{ error }}</div>
                         {% endfor %}
                     </div>
                     <div class="col-md-12 mb-3">
                         {{ form.interest_area.label(class="form-label") }}
-                        {{ form.interest_area(class="form-control", value=session.get('interest_area', '')) }}
+                        {{ form.interest_area(class="form-control") }}
                         {% for error in form.interest_area.errors %}
                             <div class="text-danger">{{ error }}</div>
                         {% endfor %}
@@ -135,7 +135,7 @@
                     <select name="q{{ i + 1 }}" class="form-select" required>
                         <option value="" disabled selected>Choose one</option>
                         {% for option in question_options[i] %}
-                        <option value="{{ option }}" {% if session.get(f'q{i+1}', '') == option %}selected{% endif %}>{{ option }}</option>
+                        <option value="{{ option }}">{{ option }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -155,8 +155,20 @@
     <script>
         $(document).ready(function() {
             const questions = $('.question');
-            questions.eq(0).addClass('active');
             let currentQuestion = 0;
+
+            // Initialize progress based on filled questions
+            let filledCount = 0;
+            $('select[name^="q"]').each(function() {
+                if ($(this).val() !== '') {
+                    filledCount++;
+                }
+            });
+            currentQuestion = filledCount - 1;
+            if (currentQuestion < 0) currentQuestion = 0;
+            if (currentQuestion >= questions.length) currentQuestion = questions.length - 1;
+            questions.eq(currentQuestion).addClass('active');
+            $('#progressBar').css('width', ((filledCount / questions.length) * 100) + '%');
 
             // Pre-select saved answers
             $('select[name^="q"]').each(function(index) {
