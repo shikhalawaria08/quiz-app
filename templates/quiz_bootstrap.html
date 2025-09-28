@@ -135,7 +135,7 @@
                     <select name="q{{ i + 1 }}" class="form-select" required>
                         <option value="" disabled selected>Choose one</option>
                         {% for option in question_options[i] %}
-                        <option value="{{ option }}">{{ option }}</option>
+                        <option value="{{ option }}" {% if session.get('q' ~ (i + 1)|string, '') == option %}selected{% endif %}>{{ option }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -169,14 +169,6 @@
             if (currentQuestion >= questions.length) currentQuestion = questions.length - 1;
             questions.eq(currentQuestion).addClass('active');
             $('#progressBar').css('width', ((filledCount / questions.length) * 100) + '%');
-
-            // Pre-select saved answers
-            $('select[name^="q"]').each(function(index) {
-                const savedValue = "{{ session.get(f'q{index+1}', '')|safe }}";
-                if (savedValue) {
-                    $(this).val(savedValue);
-                }
-            });
 
             $('select').on('change', function() {
                 if (currentQuestion < questions.length - 1) {
