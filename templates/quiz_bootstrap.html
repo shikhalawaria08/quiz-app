@@ -57,7 +57,7 @@
         .nav-buttons {
             display: flex;
             justify-content: space-between;
-            margin-top: 20px;
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -144,11 +144,11 @@
                 {% endfor %}
             </div>
             <div class="progress"><div id="progressBar" class="progress-bar" style="width: 0%;"></div></div>
-            {{ form.submit(class="btn btn-primary w-100 mt-3") }}
             <div class="nav-buttons">
                 <button type="button" id="previousBtn" class="btn btn-secondary" disabled>Previous</button>
                 <button type="button" id="nextBtn" class="btn btn-secondary">Next</button>
             </div>
+            {{ form.submit(class="btn btn-primary w-100 mt-3") }}
         </form>
     </div>
     <div class="contact-info">
@@ -161,7 +161,14 @@
 
             // Always start with the first question
             questions.eq(currentQuestion).addClass('active');
-            // Initialize progress bar based on성과
+            // Initialize progress bar based on filled questions
+            let filledCount = 0;
+            $('.question-select').each(function() {
+                if ($(this).val() && $(this).val() !== '') {
+                    filledCount++;
+                }
+            });
+            $('#progressBar').css('width', ((filledCount / questions.length) * 100) + '%');
 
             // Next button click
             $('#nextBtn').on('click', function() {
