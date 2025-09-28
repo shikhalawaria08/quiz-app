@@ -125,42 +125,63 @@ option_to_field = {
     "Securing databases": "IT"
 }
 
-# Field details remain the same
+# Field details with action plan, growth path, and resources
 field_details = {
     "Marketing": {
         "specialization": "Digital Marketing",
         "trending_roles": ["Digital Marketer", "Content Strategist", "SEO Specialist", "Market Research Analyst"],
-        "skills_courses": ["SEO Optimization", "Content Creation", "Social Media Marketing", "Google Analytics Certification", "HubSpot Inbound Marketing Course"]
+        "skills_courses": ["SEO Optimization", "Content Creation", "Social Media Marketing", "Google Analytics Certification", "HubSpot Inbound Marketing Course"],
+        "action_plan": ["Join a local marketing meetup", "Update your LinkedIn with SEO skills", "Create a portfolio of sample campaigns"],
+        "growth_path": ["Junior Marketer", "Marketing Coordinator", "Marketing Manager", "Chief Marketing Officer (CMO)"],
+        "resources": ["<a href='https://www.linkedin.com/learning/' target='_blank'>LinkedIn Learning - Marketing</a>", "<a href='https://www.coursera.org/specializations/digital-marketing' target='_blank'>Coursera - Digital Marketing</a>"]
     },
     "Sales": {
         "specialization": "Business Development",
         "trending_roles": ["Outside Sales Representative", "Sales Manager", "Business Development Professional", "Account Executive"],
-        "skills_courses": ["Negotiation Skills", "CRM Tools (e.g., Salesforce)", "Lead Generation", "Salesforce Trailhead Courses", "LinkedIn Sales Navigator Training"]
+        "skills_courses": ["Negotiation Skills", "CRM Tools (e.g., Salesforce)", "Lead Generation", "Salesforce Trailhead Courses", "LinkedIn Sales Navigator Training"],
+        "action_plan": ["Attend a sales networking event", "Practice a 30-second pitch", "Set up a CRM profile"],
+        "growth_path": ["Sales Associate", "Senior Sales Rep", "Sales Manager", "VP of Sales"],
+        "resources": ["<a href='https://www.linkedin.com/learning/' target='_blank'>LinkedIn Learning - Sales</a>", "<a href='https://trailhead.salesforce.com/' target='_blank'>Salesforce Trailhead</a>"]
     },
     "HR": {
         "specialization": "Talent Management",
         "trending_roles": ["Workforce Development Manager", "HR Business Partner", "Talent Acquisition Specialist", "Diversity and Inclusion Manager"],
-        "skills_courses": ["Recruitment Strategies", "Employee Engagement", "HR Analytics", "SHRM Certification", "Coursera HR Management Course"]
+        "skills_courses": ["Recruitment Strategies", "Employee Engagement", "HR Analytics", "SHRM Certification", "Coursera HR Management Course"],
+        "action_plan": ["Volunteer for a hiring committee", "Learn HR software (e.g., Workday)", "Network with HR professionals"],
+        "growth_path": ["HR Assistant", "HR Generalist", "HR Manager", "CHRO"],
+        "resources": ["<a href='https://www.shrm.org/certifications' target='_blank'>SHRM Certification</a>", "<a href='https://www.coursera.org/learn/human-resource-management' target='_blank'>Coursera - HR Management</a>"]
     },
     "Operations": {
         "specialization": "Supply Chain Management",
         "trending_roles": ["Sustainability Specialist", "Operations Manager", "Supply Chain Analyst", "Logistics Coordinator"],
-        "skills_courses": ["Process Optimization", "Supply Chain Logistics", "Lean Six Sigma", "APICS Certification", "Coursera Supply Chain Management Specialization"]
+        "skills_courses": ["Process Optimization", "Supply Chain Logistics", "Lean Six Sigma", "APICS Certification", "Coursera Supply Chain Management Specialization"],
+        "action_plan": ["Shadow an operations team", "Learn supply chain tools (e.g., SAP)", "Get a logistics certification"],
+        "growth_path": ["Operations Coordinator", "Supply Chain Analyst", "Operations Manager", "COO"],
+        "resources": ["<a href='https://www.apics.org/credentials-education/credentials/cscp' target='_blank'>APICS CSCP</a>", "<a href='https://www.coursera.org/specializations/supply-chain-management' target='_blank'>Coursera - Supply Chain</a>"]
     },
     "Finance": {
         "specialization": "Financial Analysis",
         "trending_roles": ["Treasury Manager", "Financial Manager", "Private Equity Analyst", "FinTech Specialist"],
-        "skills_courses": ["Financial Modeling", "Risk Assessment", "Budgeting", "CFA Certification", "Coursera Financial Management Course"]
+        "skills_courses": ["Financial Modeling", "Risk Assessment", "Budgeting", "CFA Certification", "Coursera Financial Management Course"],
+        "action_plan": ["Take a budgeting course", "Join a finance forum", "Update resume with financial skills"],
+        "growth_path": ["Financial Analyst", "Senior Analyst", "Finance Manager", "CFO"],
+        "resources": ["<a href='https://www.cfainstitute.org/en/programs/cfa' target='_blank'>CFA Institute</a>", "<a href='https://www.coursera.org/learn/financial-management' target='_blank'>Coursera - Financial Management</a>"]
     },
     "IT": {
         "specialization": "AI and Cybersecurity",
         "trending_roles": ["AI Engineer", "Software Developer", "Information Security Analyst", "IT Manager"],
-        "skills_courses": ["Python Programming", "AI/ML Fundamentals", "Cybersecurity", "AWS Certification", "Coursera Google IT Support Professional Certificate"]
+        "skills_courses": ["Python Programming", "AI/ML Fundamentals", "Cybersecurity", "AWS Certification", "Coursera Google IT Support Professional Certificate"],
+        "action_plan": ["Start a coding project", "Earn an AWS certification", "Join a tech meetup"],
+        "growth_path": ["Junior Developer", "Mid-Level Engineer", "Senior Developer", "CTO"],
+        "resources": ["<a href='https://aws.amazon.com/certification/' target='_blank'>AWS Certification</a>", "<a href='https://www.coursera.org/professional-certificates/google-it-support' target='_blank'>Coursera - IT Support</a>"]
     },
     "Product": {
         "specialization": "Product Management",
         "trending_roles": ["Chief Growth Officer", "Product Manager", "E-commerce Specialist", "UX/UI Designer"],
-        "skills_courses": ["Product Roadmapping", "User Research", "Agile Methodologies", "Product Management Certification (e.g., PMP)", "Coursera Google Product Management Certificate"]
+        "skills_courses": ["Product Roadmapping", "User Research", "Agile Methodologies", "Product Management Certification (e.g., PMP)", "Coursera Google Product Management Certificate"],
+        "action_plan": ["Create a mock product plan", "Learn Agile tools (e.g., Jira)", "Network with PMs"],
+        "growth_path": ["Associate PM", "Product Manager", "Senior PM", "Chief Product Officer"],
+        "resources": ["<a href='https://www.pmi.org/certifications/project-management-pmp' target='_blank'>PMP Certification</a>", "<a href='https://www.coursera.org/professional-certificates/google-project-management' target='_blank'>Coursera - Product Management</a>"]
     }
 }
 
