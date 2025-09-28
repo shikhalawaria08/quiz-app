@@ -9,7 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         body {
-            background-image: url('https://github.com/shikhalawaria08/quiz-app/raw/main/career-path.webp');
+            background-image: url('https://github.com/shikhalawaria08/quiz-app/raw/main/abstract_background.png');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -52,6 +52,11 @@
             width: 100%;
             font-size: 14px;
         }
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -74,49 +79,49 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         {{ form.name.label(class="form-label") }}
-                        {{ form.name(class="form-control") }}
+                        {{ form.name(class="form-control", value=session.get('name', '')) }}
                         {% for error in form.name.errors %}
                             <div class="text-danger">{{ error }}</div>
                         {% endfor %}
                     </div>
                     <div class="col-md-6 mb-3">
                         {{ form.age.label(class="form-label") }}
-                        {{ form.age(class="form-control") }}
+                        {{ form.age(class="form-control", value=session.get('age', '')) }}
                         {% for error in form.age.errors %}
                             <div class="text-danger">{{ error }}</div>
                         {% endfor %}
                     </div>
                     <div class="col-md-6 mb-3">
                         {{ form.contact.label(class="form-label") }}
-                        {{ form.contact(class="form-control") }}
+                        {{ form.contact(class="form-control", value=session.get('contact', '')) }}
                         {% for error in form.contact.errors %}
                             <div class="text-danger">{{ error }}</div>
                         {% endfor %}
                     </div>
                     <div class="col-md-6 mb-3">
                         {{ form.email.label(class="form-label") }}
-                        {{ form.email(class="form-control") }}
+                        {{ form.email(class="form-control", value=session.get('email', '')) }}
                         {% for error in form.email.errors %}
                             <div class="text-danger">{{ error }}</div>
                         {% endfor %}
                     </div>
                     <div class="col-md-6 mb-3">
                         {{ form.profession.label(class="form-label") }}
-                        {{ form.profession(class="form-control") }}
+                        {{ form.profession(class="form-control", value=session.get('profession', '')) }}
                         {% for error in form.profession.errors %}
                             <div class="text-danger">{{ error }}</div>
                         {% endfor %}
                     </div>
                     <div class="col-md-6 mb-3">
                         {{ form.experience.label(class="form-label") }}
-                        {{ form.experience(class="form-control") }}
+                        {{ form.experience(class="form-select", value=session.get('experience', '')) }}
                         {% for error in form.experience.errors %}
                             <div class="text-danger">{{ error }}</div>
                         {% endfor %}
                     </div>
                     <div class="col-md-12 mb-3">
                         {{ form.interest_area.label(class="form-label") }}
-                        {{ form.interest_area(class="form-control") }}
+                        {{ form.interest_area(class="form-control", value=session.get('interest_area', '')) }}
                         {% for error in form.interest_area.errors %}
                             <div class="text-danger">{{ error }}</div>
                         {% endfor %}
@@ -130,7 +135,7 @@
                     <select name="q{{ i + 1 }}" class="form-select" required>
                         <option value="" disabled selected>Choose one</option>
                         {% for option in question_options[i] %}
-                        <option value="{{ option }}">{{ option }}</option>
+                        <option value="{{ option }}" {% if session.get(f'q{i+1}', '') == option %}selected{% endif %}>{{ option }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -138,6 +143,10 @@
             </div>
             <div class="progress"><div id="progressBar" class="progress-bar" style="width: 0%;"></div></div>
             {{ form.submit(class="btn btn-primary w-100 mt-3") }}
+            <div class="nav-buttons">
+                <button type="button" id="previousBtn" class="btn btn-secondary" disabled>Previous</button>
+                <button type="button" id="nextBtn" class="btn btn-secondary">Next</button>
+            </div>
         </form>
     </div>
     <div class="contact-info">
@@ -148,14 +157,53 @@
             const questions = $('.question');
             questions.eq(0).addClass('active');
             let currentQuestion = 0;
+
+            // Pre-select saved answers
+            $('select[name^="q"]').each(function(index) {
+                const savedValue = "{{ session.get(f'q{index+1}', '')|safe }}";
+                if (savedValue) {
+                    $(this).val(savedValue);
+                }
+            });
+
             $('select').on('change', function() {
                 if (currentQuestion < questions.length - 1) {
                     questions.eq(currentQuestion).removeClass('active');
                     currentQuestion++;
                     questions.eq(currentQuestion).addClass('active');
                     $('#progressBar').css('width', ((currentQuestion + 1) / questions.length * 100) + '%');
+                    updateButtons();
                 }
             });
+
+            // Previous button
+            $('#previousBtn').on('click', function() {
+                if (currentQuestion > 0) {
+                    questions.eq(currentQuestion).removeClass('active');
+                    currentQuestion--;
+                    questions.eq(currentQuestion).addClass('active');
+                    $('#progressBar').css('width', ((currentQuestion + 1) / questions.length * 100) + '%');
+                    updateButtons();
+                }
+            });
+
+            // Next button
+            $('#nextBtn').on('click', function() {
+                if (currentQuestion < questions.length - 1) {
+                    questions.eq(currentQuestion).removeClass('active');
+                    currentQuestion++;
+                    questions.eq(currentQuestion).addClass('active');
+                    $('#progressBar').css('width', ((currentQuestion + 1) / questions.length * 100) + '%');
+                    updateButtons();
+                }
+            });
+
+            // Update button states
+            function updateButtons() {
+                $('#previousBtn').prop('disabled', currentQuestion === 0);
+                $('#nextBtn').prop('disabled', currentQuestion === questions.length - 1);
+            }
+            updateButtons();
         });
     </script>
 </body>
