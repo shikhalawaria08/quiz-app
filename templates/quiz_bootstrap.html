@@ -40,6 +40,8 @@
         .form-select, .form-control { border-color: #007BFF; }
         .btn-primary { background-color: #0056b3; border-color: #0056b3; }
         .btn-primary:hover { background-color: #004085; border-color: #004085; }
+        .btn-secondary { background-color: #6c757d; border-color: #6c757d; }
+        .btn-secondary:hover { background-color: #5a6268; border-color: #5a6268; }
         .alert-success { background-color: #d4edda; border-color: #c3e6cb; color: #155724; }
         .alert-danger { background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; }
         .contact-info {
@@ -56,6 +58,13 @@
             display: flex;
             justify-content: space-between;
             margin-top: 10px;
+        }
+        .submit-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -142,7 +151,10 @@
                 {% endfor %}
             </div>
             <div class="progress"><div id="progressBar" class="progress-bar" style="width: 0%;"></div></div>
-            {{ form.submit(class="btn btn-primary w-100 mt-3") }}
+            <div class="submit-buttons">
+                {{ form.submit(class="btn btn-primary w-100") }}
+                <a href="/" class="btn btn-secondary w-100">Go Home</a>
+            </div>
             <div class="nav-buttons">
                 <button type="button" id="previousBtn" class="btn btn-secondary" disabled>Previous</button>
                 <button type="button" id="nextBtn" class="btn btn-secondary">Next</button>
@@ -157,20 +169,18 @@
             const questions = $('.question');
             let currentQuestion = 0;
 
-            // Initialize progress based on filled questions
+            // Always start with the first question on page load
+            questions.eq(currentQuestion).addClass('active');
+            // Calculate initial progress based on filled questions
             let filledCount = 0;
             $('.question-select').each(function() {
                 if ($(this).val() !== '') {
                     filledCount++;
                 }
             });
-            currentQuestion = filledCount - 1;
-            if (currentQuestion < 0) currentQuestion = 0;
-            if (currentQuestion >= questions.length) currentQuestion = questions.length - 1;
-            questions.eq(currentQuestion).addClass('active');
             $('#progressBar').css('width', ((filledCount / questions.length) * 100) + '%');
 
-            // Change event on question selects only
+            // Change event on question selects
             $('.question-select').on('change', function() {
                 if (currentQuestion < questions.length - 1) {
                     questions.eq(currentQuestion).removeClass('active');
