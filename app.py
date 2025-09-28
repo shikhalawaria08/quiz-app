@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, flash
+from flask import Flask, render_template, request, flash, session
 import gspread
 from google.oauth2.service_account import Credentials
 import os
@@ -6,7 +6,7 @@ import json
 import time
 import logging  # Added for logging
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, SubmitField
+from wtforms import StringField, IntegerField, SubmitField, SelectField
 from wtforms.validators import DataRequired, Email, NumberRange, Regexp
 
 app = Flask(__name__)
@@ -206,7 +206,14 @@ class QuizForm(FlaskForm):
     contact = StringField('Mobile Number', validators=[DataRequired(), Regexp(r'^\d{10}$', message="Mobile number must be exactly 10 digits")])
     email = StringField('Email', validators=[DataRequired(), Email(message="Invalid email address")])
     profession = StringField('Profession', validators=[DataRequired()])
-    experience = IntegerField('Experience (Years)', validators=[DataRequired(), NumberRange(min=0, message="Experience must be a positive whole number")])
+    experience = SelectField('No. of Years of Experience', validators=[DataRequired()], choices=[
+        ('Fresher', 'Fresher'),
+        ('less than 1 year', 'less than 1 year'),
+        ('1-3 years', '1-3 years'),
+        ('3-7 years', '3-7 years'),
+        ('7-10 years', '7-10 years'),
+        ('more than 10 years', 'more than 10 years')
+    ])
     interest_area = StringField('Interest Area', validators=[DataRequired()])
     submit = SubmitField('Submit')
 
@@ -336,13 +343,56 @@ def quiz():
                     recent_submissions[client_ip] = (current_time, hash(str(answers)))
                     flash("Data saved successfully!", "success")
 
+                # Clear session on successful submission
+                session.clear()
                 return render_template('result.html', name=name, recommended_field=recommended_field, details=details, save_error=save_error)
             else:
+                # Store form data in session on validation failure
+                session['name'] = form.name.data
+                session['age'] = form.age.data
+                session['contact'] = form.contact.data
+                session['email'] = form.email.data
+                session['profession'] = form.profession.data
+                session['experience'] = form.experience.data
+                session['interest_area'] = form.interest_area.data
+                for i in range(1, 11):
+                    session[f'q{i}'] = request.form.get(f'q{i}')
                 flash("Please correct the errors in the form.", "danger")
         except Exception as e:
             logger.error(f"Error in quiz route: {str(e)}")
             flash("An error occurred while processing your quiz. Please try again.", "danger")
+            # Store form data in session on exception
+            session['name'] = form.name.data
+            session['age'] = form.age.data
+            session['contact'] = form.contact.data
+            session['email'] = form.email.data
+            session['profession'] = form.profession.data
+            session['experience'] = form.experience.data
+            session['interest_area'] = form.interest_area.data
+            for i in range(1, 11):
+                session[f'q{i}'] = request.form.get(f'q{i}')
             return render_template('quiz_bootstrap.html', form=form, questions=questions, question_options=question_options)
+
+    # Pre-fill form from session on GET or failed POST
+    if 'name' in session:
+        form.name.data = session.get('name', '')
+    if 'age' in session:
+        form.age.data = session.get('age', '')
+    if 'contact' in session:
+        form.contact.data = session.get('contact', '')
+    if 'email' in session:
+        form.email.data = session.get('email', '')
+    if 'profession' in session:
+        form.profession.data = session.get('profession', '')
+    if 'experience' in session:
+        form.experience.data = session.get('experience', '')
+    if 'interest_area' in session:
+        form.interest_area.data = session.get('interest_area', '')
+    for i in range(1, 11):
+        if f'q{i}' in session:
+            # This is a workaround since WTForms doesn't directly support pre-selecting options in a dynamic select
+            # We'll handle it via JavaScript for the questions
+            pass
 
     return render_template('quiz_bootstrap.html', form=form, questions=questions, question_options=question_options)
 
