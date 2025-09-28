@@ -4,12 +4,17 @@ from google.oauth2.service_account import Credentials
 import os
 import json
 import time
+import logging  # Added for logging
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField
 from wtforms.validators import DataRequired, Email, NumberRange, Regexp
 
 app = Flask(__name__)
 app.secret_key = 'quiz_secret_key'  # For flash and forms
+
+# Setup logging
+logging.basicConfig(level=logging.ERROR)
+logger = logging.getLogger(__name__)
 
 # Unique options for each question, limited to 10 per question
 option_to_field = {
@@ -266,73 +271,78 @@ def quiz():
     ]
 
     if request.method == 'POST':
-        if form.validate_on_submit():
-            client_ip = request.remote_addr
-            name = form.name.data
-            age = form.age.data
-            contact = form.contact.data
-            email = form.email.data
-            profession = form.profession.data
-            experience = form.experience.data
-            interest_area = form.interest_area.data
-            answers = {f'q{i}': request.form.get(f'q{i}') for i in range(1, 11)}
+        try:
+            if form.validate_on_submit():
+                client_ip = request.remote_addr
+                name = form.name.data
+                age = form.age.data
+                contact = form.contact.data
+                email = form.email.data
+                profession = form.profession.data
+                experience = form.experience.data
+                interest_area = form.interest_area.data
+                answers = {f'q{i}': request.form.get(f'q{i}') for i in range(1, 11)}
 
-            fields = ['Marketing', 'Sales', 'HR', 'Operations', 'Finance', 'IT', 'Product']
-            votes = {field: 0 for field in fields}
-            for i in range(1, 11):
-                answer = answers.get(f'q{i}')
-                if answer in option_to_field:
-                    votes[option_to_field[answer]] += 1
+                fields = ['Marketing', 'Sales', 'HR', 'Operations', 'Finance', 'IT', 'Product']
+                votes = {field: 0 for field in fields}
+                for i in range(1, 11):
+                    answer = answers.get(f'q{i}')
+                    if answer in option_to_field:
+                        votes[option_to_field[answer]] += 1
 
-            recommended_field = max(votes, key=votes.get)
-            details = field_details[recommended_field]
-            current_time = time.time()
+                recommended_field = max(votes, key=votes.get)
+                details = field_details[recommended_field]
+                current_time = time.time()
 
-            # Duplicate check
-            if client_ip in recent_submissions:
-                last_time, last_hash = recent_submissions[client_ip]
-                if current_time - last_time < 1:
-                    save_error = "Duplicate submission detected. Data was not saved again."
-                else:
-                    data_hash = hash(str(answers))
-                    if last_hash == data_hash and current_time - last_time < 5:
+                # Duplicate check
+                if client_ip in recent_submissions:
+                    last_time, last_hash = recent_submissions[client_ip]
+                    if current_time - last_time < 1:
                         save_error = "Duplicate submission detected. Data was not saved again."
                     else:
-                        try:
+                        data_hash = hash(str(answers))
+                        if last_hash == data_hash and current_time - last_time < 5:
+                            save_error = "Duplicate submission detected. Data was not saved again."
+                        else:
                             spreadsheet = client.open("Quiz responses")
                             sheet = spreadsheet.worksheet("Quiz Responses")
                             row_data = [
                                 name, age, contact, email, profession, experience, interest_area,
                                 answers['q1'], answers['q2'], answers['q3'], answers['q4'], answers['q5'],
                                 answers['q6'], answers['q7'], answers['q8'], answers['q9'], answers['q10'],
-                                recommended_field
+                                recommended_field,  # Added
+                                details['specialization'],  # Added
+                                ', '.join(details['skills_courses']),  # Added
+                                ', '.join(details['action_plan']),  # Added
+                                ' → '.join(details['growth_path'])  # Added
                             ]
                             sheet.append_row(row_data)
                             recent_submissions[client_ip] = (current_time, data_hash)
                             flash("Data saved successfully!", "success")
-                        except Exception as e:
-                            save_error = f"Error saving data: {str(e)}"
-                            flash("Error saving data. Please try again.", "danger")
-            else:
-                try:
+                else:
                     spreadsheet = client.open("Quiz responses")
                     sheet = spreadsheet.worksheet("Quiz Responses")
                     row_data = [
                         name, age, contact, email, profession, experience, interest_area,
                         answers['q1'], answers['q2'], answers['q3'], answers['q4'], answers['q5'],
                         answers['q6'], answers['q7'], answers['q8'], answers['q9'], answers['q10'],
-                        recommended_field
+                        recommended_field,  # Added
+                        details['specialization'],  # Added
+                        ', '.join(details['skills_courses']),  # Added
+                        ', '.join(details['action_plan']),  # Added
+                        ' → '.join(details['growth_path'])  # Added
                     ]
                     sheet.append_row(row_data)
                     recent_submissions[client_ip] = (current_time, hash(str(answers)))
                     flash("Data saved successfully!", "success")
-                except Exception as e:
-                    save_error = f"Error saving data: {str(e)}"
-                    flash("Error saving data. Please try again.", "danger")
 
-            return render_template('result.html', name=name, recommended_field=recommended_field, details=details, save_error=save_error)
-        else:
-            flash("Please correct the errors in the form.", "danger")
+                return render_template('result.html', name=name, recommended_field=recommended_field, details=details, save_error=save_error)
+            else:
+                flash("Please correct the errors in the form.", "danger")
+        except Exception as e:
+            logger.error(f"Error in quiz route: {str(e)}")
+            flash("An error occurred while processing your quiz. Please try again.", "danger")
+            return render_template('quiz_bootstrap.html', form=form, questions=questions, question_options=question_options)
 
     return render_template('quiz_bootstrap.html', form=form, questions=questions, question_options=question_options)
 
