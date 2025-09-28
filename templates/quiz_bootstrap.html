@@ -57,13 +57,6 @@
         .nav-buttons {
             display: flex;
             justify-content: space-between;
-            margin-top: 10px;
-        }
-        .submit-buttons {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
             margin-top: 20px;
         }
     </style>
@@ -151,10 +144,7 @@
                 {% endfor %}
             </div>
             <div class="progress"><div id="progressBar" class="progress-bar" style="width: 0%;"></div></div>
-            <div class="submit-buttons">
-                {{ form.submit(class="btn btn-primary w-100") }}
-                <a href="/" class="btn btn-secondary w-100">Go Home</a>
-            </div>
+            {{ form.submit(class="btn btn-primary w-100 mt-3") }}
             <div class="nav-buttons">
                 <button type="button" id="previousBtn" class="btn btn-secondary" disabled>Previous</button>
                 <button type="button" id="nextBtn" class="btn btn-secondary">Next</button>
@@ -169,44 +159,31 @@
             const questions = $('.question');
             let currentQuestion = 0;
 
-            // Always start with the first question on page load
+            // Always start with the first question
             questions.eq(currentQuestion).addClass('active');
-            // Calculate initial progress based on filled questions
-            let filledCount = 0;
-            $('.question-select').each(function() {
-                if ($(this).val() !== '') {
-                    filledCount++;
-                }
-            });
-            $('#progressBar').css('width', ((filledCount / questions.length) * 100) + '%');
+            // Initialize progress bar based on성과
 
-            // Change event on question selects
-            $('.question-select').on('change', function() {
+            // Next button click
+            $('#nextBtn').on('click', function() {
                 if (currentQuestion < questions.length - 1) {
-                    questions.eq(currentQuestion).removeClass('active');
-                    currentQuestion++;
-                    questions.eq(currentQuestion).addClass('active');
-                    $('#progressBar').css('width', ((currentQuestion + 1) / questions.length * 100) + '%');
-                    updateButtons();
+                    const currentSelect = questions.eq(currentQuestion).find('.question-select');
+                    if (currentSelect.val() && currentSelect.val() !== '') {
+                        questions.eq(currentQuestion).removeClass('active');
+                        currentQuestion++;
+                        questions.eq(currentQuestion).addClass('active');
+                        $('#progressBar').css('width', ((currentQuestion + 1) / questions.length * 100) + '%');
+                        updateButtons();
+                    } else {
+                        alert('Please select an answer before proceeding.');
+                    }
                 }
             });
 
-            // Previous button
+            // Previous button click
             $('#previousBtn').on('click', function() {
                 if (currentQuestion > 0) {
                     questions.eq(currentQuestion).removeClass('active');
                     currentQuestion--;
-                    questions.eq(currentQuestion).addClass('active');
-                    $('#progressBar').css('width', ((currentQuestion + 1) / questions.length * 100) + '%');
-                    updateButtons();
-                }
-            });
-
-            // Next button
-            $('#nextBtn').on('click', function() {
-                if (currentQuestion < questions.length - 1) {
-                    questions.eq(currentQuestion).removeClass('active');
-                    currentQuestion++;
                     questions.eq(currentQuestion).addClass('active');
                     $('#progressBar').css('width', ((currentQuestion + 1) / questions.length * 100) + '%');
                     updateButtons();
@@ -219,6 +196,21 @@
                 $('#nextBtn').prop('disabled', currentQuestion === questions.length - 1);
             }
             updateButtons();
+
+            // Form submission validation
+            $('#quizForm').on('submit', function(e) {
+                let allAnswered = true;
+                $('.question-select').each(function() {
+                    if (!$(this).val() || $(this).val() === '') {
+                        allAnswered = false;
+                        return false;
+                    }
+                });
+                if (!allAnswered) {
+                    e.preventDefault();
+                    alert('Please answer all questions before submitting.');
+                }
+            });
         });
     </script>
 </body>
