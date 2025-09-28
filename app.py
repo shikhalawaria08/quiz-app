@@ -4,89 +4,88 @@ from google.oauth2.service_account import Credentials
 import os
 import json
 import time
-from datetime import datetime
+from flask_wtf import FlaskForm
+from wtforms import StringField, IntegerField, SubmitField
+from wtforms.validators import DataRequired, Email, NumberRange, Regexp
 
 app = Flask(__name__)
-app.secret_key = 'quiz_secret_key'  # Needed for flash messages
+app.secret_key = 'quiz_secret_key'  # For flash and forms
 
-# Store recent submissions (simple in-memory check; resets on server restart)
-recent_submissions = {}  # {ip_address: (timestamp, data_hash)}
-
-# Mapping from descriptive options to corporate fields (unchanged)
+# Simplified option_to_field with less technical language
 option_to_field = {
-    "Creating campaigns to promote products": "Marketing",
-    "Analyzing customer trends and feedback": "Marketing",
-    "Developing brand strategies and content": "Marketing",
-    "Planning events and partnerships": "Marketing",
-    "Measuring campaign success with metrics": "Marketing",
-    "Managing social media and advertising": "Marketing",
-    "Conducting market research studies": "Marketing",
-    "Designing promotional materials": "Marketing",
-    "Collaborating with influencers": "Marketing",
-    "Optimizing SEO and online presence": "Marketing",
-    "Building relationships with clients": "Sales",
-    "Negotiating deals and contracts": "Sales",
-    "Meeting sales targets and quotas": "Sales",
-    "Presenting products to potential buyers": "Sales",
-    "Handling customer objections": "Sales",
-    "Following up on leads": "Sales",
-    "Organizing sales demos": "Sales",
-    "Tracking sales performance": "Sales",
-    "Upselling and cross-selling": "Sales",
-    "Attending trade shows": "Sales",
-    "Recruiting and interviewing candidates": "HR",
-    "Managing employee training programs": "HR",
-    "Handling performance reviews": "HR",
-    "Resolving workplace conflicts": "HR",
-    "Developing company policies": "HR",
-    "Organizing team-building activities": "HR",
-    "Overseeing payroll and benefits": "HR",
-    "Promoting diversity and inclusion": "HR",
-    "Conducting exit interviews": "HR",
-    "Supporting employee well-being": "HR",
-    "Streamlining processes for efficiency": "Operations",
-    "Managing supply chain logistics": "Operations",
-    "Coordinating project timelines": "Operations",
-    "Optimizing inventory levels": "Operations",
-    "Ensuring quality control": "Operations",
-    "Handling vendor relationships": "Operations",
-    "Monitoring operational metrics": "Operations",
-    "Implementing process improvements": "Operations",
-    "Coordinating cross-team efforts": "Operations",
-    "Managing daily workflows": "Operations",
-    "Preparing financial reports and budgets": "Finance",
-    "Analyzing investment opportunities": "Finance",
-    "Managing accounts and audits": "Finance",
-    "Forecasting financial trends": "Finance",
-    "Handling tax compliance": "Finance",
-    "Overseeing cash flow": "Finance",
-    "Evaluating financial risks": "Finance",
-    "Creating financial models": "Finance",
-    "Advising on cost reductions": "Finance",
-    "Tracking expenses and revenues": "Finance",
-    "Troubleshooting technical issues": "IT",
-    "Implementing software solutions": "IT",
-    "Managing network security": "IT",
-    "Supporting user technology needs": "IT",
-    "Developing custom applications": "IT",
-    "Maintaining hardware systems": "IT",
-    "Conducting system upgrades": "IT",
-    "Ensuring data backups": "IT",
-    "Integrating new technologies": "IT",
-    "Providing IT training": "IT",
-    "Defining product roadmaps": "Product",
-    "Gathering user requirements": "Product",
-    "Prioritizing features for development": "Product",
-    "Conducting market analysis": "Product",
-    "Collaborating with design teams": "Product",
-    "Testing product prototypes": "Product",
-    "Launching new products": "Product",
-    "Collecting user feedback": "Product",
-    "Iterating on product improvements": "Product",
-    "Aligning product with business goals": "Product"
+    "Coming up with ad ideas for products": "Marketing",
+    "Looking at what customers like and say": "Marketing",
+    "Planning brand ideas and content": "Marketing",
+    "Setting up events and team-ups": "Marketing",
+    "Checking how well ads work with numbers": "Marketing",
+    "Handling social media and ads": "Marketing",
+    "Doing studies on what people buy": "Marketing",
+    "Making posters and promo stuff": "Marketing",
+    "Working with online influencers": "Marketing",
+    "Making websites show up better in searches": "Marketing",
+    "Making friends with customers": "Sales",
+    "Talking out deals and agreements": "Sales",
+    "Hitting sales goals": "Sales",
+    "Showing products to buyers": "Sales",
+    "Dealing with customer no's": "Sales",
+    "Checking in on potential customers": "Sales",
+    "Setting up product shows": "Sales",
+    "Keeping track of sales numbers": "Sales",
+    "Selling more or extra items": "Sales",
+    "Going to business fairs": "Sales",
+    "Finding and talking to new hires": "HR",
+    "Running training for staff": "HR",
+    "Doing check-ins on work performance": "HR",
+    "Fixing arguments at work": "HR",
+    "Making rules for the company": "HR",
+    "Planning fun team activities": "HR",
+    "Handling pay and perks": "HR",
+    "Encouraging different backgrounds at work": "HR",
+    "Talking to people leaving the job": "HR",
+    "Helping staff feel good": "HR",
+    "Making work faster and better": "Operations",
+    "Handling deliveries and supplies": "Operations",
+    "Planning when things get done": "Operations",
+    "Keeping the right amount of stock": "Operations",
+    "Checking for good quality": "Operations",
+    "Dealing with suppliers": "Operations",
+    "Watching work numbers": "Operations",
+    "Adding better ways to do things": "Operations",
+    "Teamwork across groups": "Operations",
+    "Running daily tasks": "Operations",
+    "Making money reports and plans": "Finance",
+    "Looking at places to put money": "Finance",
+    "Handling money records and checks": "Finance",
+    "Guessing future money trends": "Finance",
+    "Dealing with taxes": "Finance",
+    "Watching money coming in and out": "Finance",
+    "Checking for money risks": "Finance",
+    "Building money plans": "Finance",
+    "Giving tips to save money": "Finance",
+    "Tracking costs and earnings": "Finance",
+    "Fixing computer problems": "IT",
+    "Setting up new software": "IT",
+    "Keeping networks safe": "IT",
+    "Helping with tech issues": "IT",
+    "Making new apps": "IT",
+    "Taking care of computers": "IT",
+    "Updating systems": "IT",
+    "Backing up data": "IT",
+    "Adding new tech": "IT",
+    "Teaching tech skills": "IT",
+    "Planning what products to make": "Product",
+    "Asking what users need": "Product",
+    "Picking what features to add": "Product",
+    "Studying the market": "Product",
+    "Working with designers": "Product",
+    "Testing new versions": "Product",
+    "Releasing new items": "Product",
+    "Getting user opinions": "Product",
+    "Improving products": "Product",
+    "Matching products to company goals": "Product"
 }
 
-# Details for each field (unchanged)
+# Field details remain the same
 field_details = {
     "Marketing": {
         "specialization": "Digital Marketing",
@@ -125,78 +124,114 @@ field_details = {
     }
 }
 
-# Set up Google Sheets client using Render environment variable
+# Google Sheets setup
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
 creds_info = json.loads(os.environ['GOOGLE_CREDENTIALS'])
 creds = Credentials.from_service_account_info(creds_info, scopes=SCOPES)
 client = gspread.authorize(creds)
 
+# Recent submissions to prevent duplicates
+recent_submissions = {}
+
+# Define form with validations
+class QuizForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired()])
+    age = IntegerField('Age', validators=[DataRequired(), NumberRange(min=0, message="Age must be a positive number")])
+    contact = StringField('Mobile Number', validators=[DataRequired(), Regexp(r'^\d{10}$', message="Mobile number must be exactly 10 digits")])
+    email = StringField('Email', validators=[DataRequired(), Email(message="Invalid email address")])
+    profession = StringField('Profession', validators=[DataRequired()])
+    experience = IntegerField('Experience (Years)', validators=[DataRequired(), NumberRange(min=0, message="Experience must be a positive whole number")])
+    interest_area = StringField('Interest Area', validators=[DataRequired()])
+    submit = SubmitField('Submit')
+
 @app.route('/', methods=['GET', 'POST'])
 def quiz():
+    form = QuizForm()
     save_error = None
-    if request.method == 'POST':
-        # (All your existing POST handling code stays the same)
-        client_ip = request.remote_addr
-        name = request.form['name']
-        age = request.form['age']
-        contact = request.form['contact']
-        email = request.form['email']
-        profession = request.form['profession']
-        experience = request.form['experience']
-        interest_area = request.form['interest_area']
-        answers = {f'q{i}': request.form.get(f'q{i}') for i in range(1, 11)}
-        
-        fields = ['Marketing', 'Sales', 'HR', 'Operations', 'Finance', 'IT', 'Product']
-        votes = {field: 0 for field in fields}
-        for i in range(1, 11):
-            answer = request.form.get(f'q{i}')
-            if answer in option_to_field:
-                votes[option_to_field[answer]] += 1
-        
-        recommended_field = max(votes, key=votes.get)
-        details = field_details[recommended_field]
-        current_time = time.time()
+    questions = [
+        "What do you enjoy most in a work setting?",
+        "Which task excites you the most?",
+        "What type of work do you find most rewarding?",
+        "Which activity aligns with your strengths?",
+        "What do you prefer working on daily?",
+        "Which role sounds most appealing to you?",
+        "What kind of project would you lead?",
+        "Which skill do you want to develop?",
+        "What motivates your career choices?",
+        "Which task feels most natural to you?"
+    ]
+    options = list(option_to_field.keys())  # Simplified options
 
-        if client_ip in recent_submissions:
-            last_time, last_hash = recent_submissions[client_ip]
-            if current_time - last_time < 1:
-                save_error = "Duplicate submission detected. Data was not saved again."
-            else:
-                data_hash = hash(str(answers))
-                if last_hash == data_hash and current_time - last_time < 5:
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            client_ip = request.remote_addr
+            name = form.name.data
+            age = form.age.data
+            contact = form.contact.data
+            email = form.email.data
+            profession = form.profession.data
+            experience = form.experience.data
+            interest_area = form.interest_area.data
+            answers = {f'q{i}': request.form.get(f'q{i}') for i in range(1, 11)}
+
+            fields = ['Marketing', 'Sales', 'HR', 'Operations', 'Finance', 'IT', 'Product']
+            votes = {field: 0 for field in fields}
+            for i in range(1, 11):
+                answer = answers.get(f'q{i}')
+                if answer in option_to_field:
+                    votes[option_to_field[answer]] += 1
+
+            recommended_field = max(votes, key=votes.get)
+            details = field_details[recommended_field]
+            current_time = time.time()
+
+            # Duplicate check
+            if client_ip in recent_submissions:
+                last_time, last_hash = recent_submissions[client_ip]
+                if current_time - last_time < 1:
                     save_error = "Duplicate submission detected. Data was not saved again."
                 else:
-                    try:
-                        spreadsheet = client.open("Quiz responses")
-                        sheet = spreadsheet.worksheet("Quiz Responses")
-                        row_data = [
-                            name, age, contact, email, profession, experience, interest_area,
-                            answers['q1'], answers['q2'], answers['q3'], answers['q4'], answers['q5'],
-                            answers['q6'], answers['q7'], answers['q8'], answers['q9'], answers['q10'],
-                            recommended_field
-                        ]
-                        sheet.append_row(row_data)
-                        recent_submissions[client_ip] = (current_time, data_hash)
-                    except Exception as e:
-                        save_error = f"Error saving data: {e}"
-        else:
-            try:
-                spreadsheet = client.open("Quiz responses")
-                sheet = spreadsheet.worksheet("Quiz Responses")
-                row_data = [
-                    name, age, contact, email, profession, experience, interest_area,
-                    answers['q1'], answers['q2'], answers['q3'], answers['q4'], answers['q5'],
-                    answers['q6'], answers['q7'], answers['q8'], answers['q9'], answers['q10'],
-                    recommended_field
-                ]
-                sheet.append_row(row_data)
-                recent_submissions[client_ip] = (current_time, hash(str(answers)))
-            except Exception as e:
-                save_error = f"Error saving data: {e}"
+                    data_hash = hash(str(answers))
+                    if last_hash == data_hash and current_time - last_time < 5:
+                        save_error = "Duplicate submission detected. Data was not saved again."
+                    else:
+                        try:
+                            spreadsheet = client.open("Quiz responses")
+                            sheet = spreadsheet.worksheet("Quiz Responses")
+                            row_data = [
+                                name, age, contact, email, profession, experience, interest_area,
+                                answers['q1'], answers['q2'], answers['q3'], answers['q4'], answers['q5'],
+                                answers['q6'], answers['q7'], answers['q8'], answers['q9'], answers['q10'],
+                                recommended_field
+                            ]
+                            sheet.append_row(row_data)
+                            recent_submissions[client_ip] = (current_time, data_hash)
+                            flash("Data saved successfully!", "success")
+                        except Exception as e:
+                            save_error = f"Error saving data: {str(e)}"
+                            flash("Error saving data. Please try again.", "danger")
+            else:
+                try:
+                    spreadsheet = client.open("Quiz responses")
+                    sheet = spreadsheet.worksheet("Quiz Responses")
+                    row_data = [
+                        name, age, contact, email, profession, experience, interest_area,
+                        answers['q1'], answers['q2'], answers['q3'], answers['q4'], answers['q5'],
+                        answers['q6'], answers['q7'], answers['q8'], answers['q9'], answers['q10'],
+                        recommended_field
+                    ]
+                    sheet.append_row(row_data)
+                    recent_submissions[client_ip] = (current_time, hash(str(answers)))
+                    flash("Data saved successfully!", "success")
+                except Exception as e:
+                    save_error = f"Error saving data: {str(e)}"
+                    flash("Error saving data. Please try again.", "danger")
 
-        return render_template('result.html', name=name, recommended_field=recommended_field, details=details, save_error=save_error)
-    
-    return render_template('quiz_bootstrap.html')
+            return render_template('result.html', name=name, recommended_field=recommended_field, details=details, save_error=save_error)
+        else:
+            flash("Please correct the errors in the form.", "danger")
+
+    return render_template('quiz_bootstrap.html', form=form, questions=questions, options=options)
 
 if __name__ == '__main__':
     app.run(debug=True)
