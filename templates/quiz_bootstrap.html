@@ -132,7 +132,7 @@
                 {% for i in range(10) %}
                 <div class="question mb-3">
                     <label class="form-label">{{ questions[i] }}</label>
-                    <select name="q{{ i + 1 }}" class="form-select" required>
+                    <select name="q{{ i + 1 }}" class="form-select question-select" required>
                         <option value="" disabled selected>Choose one</option>
                         {% for option in question_options[i] %}
                         <option value="{{ option }}" {% if session.get('q' ~ (i + 1)|string, '') == option %}selected{% endif %}>{{ option }}</option>
@@ -159,7 +159,7 @@
 
             // Initialize progress based on filled questions
             let filledCount = 0;
-            $('select[name^="q"]').each(function() {
+            $('.question-select').each(function() {
                 if ($(this).val() !== '') {
                     filledCount++;
                 }
@@ -170,7 +170,8 @@
             questions.eq(currentQuestion).addClass('active');
             $('#progressBar').css('width', ((filledCount / questions.length) * 100) + '%');
 
-            $('select').on('change', function() {
+            // Change event on question selects only
+            $('.question-select').on('change', function() {
                 if (currentQuestion < questions.length - 1) {
                     questions.eq(currentQuestion).removeClass('active');
                     currentQuestion++;
