@@ -80,7 +80,6 @@
     </div>
     <script>
         var shareMessage = "{{ share_message | safe }}";
-        var url = "{{ url }}";
         var startTime = Date.now();
 
         // Track time spent on page
@@ -95,14 +94,13 @@
 
         // Share functionality
         document.getElementById('shareBtn').addEventListener('click', function() {
-            // Log the share event first
+            // Log the share event
             fetch('/log_share', { method: 'POST' });
 
             if (navigator.share) {
                 navigator.share({
                     title: 'My Career Quiz Results',
-                    text: shareMessage,
-                    url: url
+                    text: shareMessage
                 }).then(function() {
                     console.log('Thanks for sharing!');
                 }).catch(function(error) {
