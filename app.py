@@ -3,15 +3,16 @@ import gspread
 from google.oauth2.service_account import Credentials
 import os
 import json
-import time
-import logging  # Added for logging
+import datetime  # Updated for IST timestamps
+import pytz      # Added for timezone handling
+import logging
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, SelectField
 from wtforms.validators import DataRequired, Email, NumberRange, Regexp
-import uuid  # Added for unique submission IDs
+import uuid
 
 app = Flask(__name__)
-app.secret_key = 'quiz_secret_key'  # For flash and forms
+app.secret_key = 'quiz_secret_key'
 
 # Setup logging
 logging.basicConfig(level=logging.ERROR)
@@ -19,7 +20,6 @@ logger = logging.getLogger(__name__)
 
 # Unique options for each question, limited to 10 per question
 option_to_field = {
-    # Question 1: What do you enjoy most in a work setting?
     "Brainstorming creative campaigns": "Marketing",
     "Building customer relationships": "Sales",
     "Organizing team events": "HR",
@@ -30,7 +30,6 @@ option_to_field = {
     "Collaborating with teams": "Operations",
     "Managing budgets": "Finance",
     "Securing networks": "IT",
-    # Question 2: Which task excites you the most?
     "Creating ad visuals": "Marketing",
     "Closing sales deals": "Sales",
     "Recruiting talent": "HR",
@@ -41,7 +40,6 @@ option_to_field = {
     "Streamlining processes": "Operations",
     "Investing funds": "Finance",
     "Building apps": "IT",
-    # Question 3: What type of work do you find most rewarding?
     "Launching marketing strategies": "Marketing",
     "Negotiating contracts": "Sales",
     "Training employees": "HR",
@@ -52,7 +50,6 @@ option_to_field = {
     "Coordinating logistics": "Operations",
     "Assessing risks": "Finance",
     "Updating systems": "IT",
-    # Question 4: Which activity aligns with your strengths?
     "Crafting social media posts": "Marketing",
     "Presenting to clients": "Sales",
     "Resolving conflicts": "HR",
@@ -63,7 +60,6 @@ option_to_field = {
     "Monitoring performance": "Operations",
     "Advising on investments": "Finance",
     "Ensuring data security": "IT",
-    # Question 5: What do you prefer working on daily?
     "Running ad campaigns": "Marketing",
     "Following up with leads": "Sales",
     "Developing HR policies": "HR",
@@ -74,7 +70,6 @@ option_to_field = {
     "Improving efficiency": "Operations",
     "Creating financial plans": "Finance",
     "Supporting tech users": "IT",
-    # Question 6: Which role sounds most appealing to you?
     "Brand strategist": "Marketing",
     "Account manager": "Sales",
     "Talent scout": "HR",
@@ -85,7 +80,6 @@ option_to_field = {
     "Supply chain lead": "Operations",
     "Treasury officer": "Finance",
     "Cybersecurity expert": "IT",
-    # Question 7: What kind of project would you lead?
     "Marketing event": "Marketing",
     "Sales pitch": "Sales",
     "Employee onboarding": "HR",
@@ -96,7 +90,6 @@ option_to_field = {
     "Warehouse setup": "Operations",
     "Investment strategy": "Finance",
     "Network rollout": "IT",
-    # Question 8: Which skill do you want to develop?
     "SEO techniques": "Marketing",
     "Sales forecasting": "Sales",
     "Leadership training": "HR",
@@ -107,7 +100,6 @@ option_to_field = {
     "Vendor negotiation": "Operations",
     "Risk analysis": "Finance",
     "Cloud computing": "IT",
-    # Question 9: What motivates your career choices?
     "Creative impact": "Marketing",
     "Earning commissions": "Sales",
     "Team growth": "HR",
@@ -118,7 +110,6 @@ option_to_field = {
     "Resource optimization": "Operations",
     "Wealth creation": "Finance",
     "System reliability": "IT",
-    # Question 10: Which task feels most natural to you?
     "Writing content": "Marketing",
     "Building client trust": "Sales",
     "Mediating disputes": "HR",
@@ -209,7 +200,8 @@ except gspread.WorksheetNotFound:
 recent_submissions = {}
 
 def log_event(event_type, ip, utm_source, duration=None, submission_id=None, details=None):
-    timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
+    ist = pytz.timezone('Asia/Kolkata')
+    timestamp = datetime.datetime.now(ist).strftime("%Y-%m-%d %H:%M:%S %Z")
     row = [timestamp, event_type, ip, utm_source, duration or '', submission_id or '', details or '']
     analytics_sheet.append_row(row)
 
@@ -263,51 +255,49 @@ def quiz():
         "What motivates your career choices?",
         "Which task feels most natural to you?"
     ]
-    # Dynamic options for each question
     question_options = [
-        [opt for opt in option_to_field.keys() if "Question 1" in opt or opt in [
+        [opt for opt in option_to_field.keys() if opt in [
             "Brainstorming creative campaigns", "Building customer relationships", "Organizing team events",
             "Optimizing workflows", "Analyzing financial data", "Coding new features", "Designing product features",
             "Collaborating with teams", "Managing budgets", "Securing networks"]],
-        [opt for opt in option_to_field.keys() if "Question 2" in opt or opt in [
+        [opt for opt in option_to_field.keys() if opt in [
             "Creating ad visuals", "Closing sales deals", "Recruiting talent", "Managing supply chains",
             "Forecasting revenue", "Debugging software", "Testing product prototypes", "Streamlining processes",
             "Investing funds", "Building apps"]],
-        [opt for opt in option_to_field.keys() if "Question 3" in opt or opt in [
+        [opt for opt in option_to_field.keys() if opt in [
             "Launching marketing strategies", "Negotiating contracts", "Training employees",
             "Ensuring quality control", "Preparing tax reports", "Setting up servers", "Planning product launches",
             "Coordinating logistics", "Assessing risks", "Updating systems"]],
-        [opt for opt in option_to_field.keys() if "Question 4" in opt or opt in [
+        [opt for opt in option_to_field.keys() if opt in [
             "Crafting social media posts", "Presenting to clients", "Resolving conflicts", "Scheduling deliveries",
             "Balancing books", "Writing code", "Gathering user feedback", "Monitoring performance",
             "Advising on investments", "Ensuring data security"]],
-        [opt for opt in option_to_field.keys() if "Question 5" in opt or opt in [
+        [opt for opt in option_to_field.keys() if opt in [
             "Running ad campaigns", "Following up with leads", "Developing HR policies", "Overseeing inventory",
             "Reviewing expenses", "Maintaining networks", "Defining product goals", "Improving efficiency",
             "Creating financial plans", "Supporting tech users"]],
-        [opt for opt in option_to_field.keys() if "Question 6" in opt or opt in [
+        [opt for opt in option_to_field.keys() if opt in [
             "Brand strategist", "Account manager", "Talent scout", "Operations coordinator",
             "Financial analyst", "Systems admin", "Product owner", "Supply chain lead",
             "Treasury officer", "Cybersecurity expert"]],
-        [opt for opt in option_to_field.keys() if "Question 7" in opt or opt in [
+        [opt for opt in option_to_field.keys() if opt in [
             "Marketing event", "Sales pitch", "Employee onboarding", "Process improvement",
             "Budget planning", "Software upgrade", "Product roadmap", "Warehouse setup",
             "Investment strategy", "Network rollout"]],
-        [opt for opt in option_to_field.keys() if "Question 8" in opt or opt in [
+        [opt for opt in option_to_field.keys() if opt in [
             "SEO techniques", "Sales forecasting", "Leadership training", "Lean management",
             "Financial modeling", "Python programming", "User experience design", "Vendor negotiation",
             "Risk analysis", "Cloud computing"]],
-        [opt for opt in option_to_field.keys() if "Question 9" in opt or opt in [
+        [opt for opt in option_to_field.keys() if opt in [
             "Creative impact", "Earning commissions", "Team growth", "Operational success",
             "Profit growth", "Tech innovation", "Customer satisfaction", "Resource optimization",
             "Wealth creation", "System reliability"]],
-        [opt for opt in option_to_field.keys() if "Question 10" in opt or opt in [
+        [opt for opt in option_to_field.keys() if opt in [
             "Writing content", "Building client trust", "Mediating disputes", "Tracking shipments",
             "Auditing accounts", "Troubleshooting tech", "Iterating products", "Managing deadlines",
             "Evaluating investments", "Securing databases"]]
     ]
 
-    # Log visit on GET request
     if request.method == 'GET':
         utm_source = request.args.get('utm_source', 'direct')
         log_event('visit', request.remote_addr, utm_source)
@@ -334,10 +324,9 @@ def quiz():
 
                 recommended_field = max(votes, key=votes.get)
                 details = field_details[recommended_field]
-                current_time = time.time()
-                submission_id = str(uuid.uuid4())  # Generate unique ID for this submission
+                current_time = datetime.datetime.now(pytz.utc).timestamp()
+                submission_id = str(uuid.uuid4())
 
-                # Duplicate check
                 if client_ip in recent_submissions:
                     last_time, last_hash = recent_submissions[client_ip]
                     if current_time - last_time < 1:
@@ -352,15 +341,14 @@ def quiz():
                                 name, age, contact, email, profession, experience, interest_area,
                                 answers['q1'], answers['q2'], answers['q3'], answers['q4'], answers['q5'],
                                 answers['q6'], answers['q7'], answers['q8'], answers['q9'], answers['q10'],
-                                recommended_field,  # Added
-                                details['specialization'],  # Added
-                                ', '.join(details['skills_courses']),  # Added
-                                ', '.join(details['action_plan']),  # Added
-                                ' → '.join(details['growth_path'])  # Added
+                                recommended_field,
+                                details['specialization'],
+                                ', '.join(details['skills_courses']),
+                                ', '.join(details['action_plan']),
+                                ' → '.join(details['growth_path'])
                             ]
                             sheet.append_row(row_data)
                             recent_submissions[client_ip] = (current_time, data_hash)
-                            # Log submission
                             log_event('submission', client_ip, 'quiz', None, submission_id)
                             session['submission_id'] = submission_id
                             flash("Data saved successfully!", "success")
@@ -370,26 +358,22 @@ def quiz():
                         name, age, contact, email, profession, experience, interest_area,
                         answers['q1'], answers['q2'], answers['q3'], answers['q4'], answers['q5'],
                         answers['q6'], answers['q7'], answers['q8'], answers['q9'], answers['q10'],
-                        recommended_field,  # Added
-                        details['specialization'],  # Added
-                        ', '.join(details['skills_courses']),  # Added
-                        ', '.join(details['action_plan']),  # Added
-                        ' → '.join(details['growth_path'])  # Added
+                        recommended_field,
+                        details['specialization'],
+                        ', '.join(details['skills_courses']),
+                        ', '.join(details['action_plan']),
+                        ' → '.join(details['growth_path'])
                     ]
                     sheet.append_row(row_data)
                     recent_submissions[client_ip] = (current_time, hash(str(answers)))
-                    # Log submission
                     log_event('submission', client_ip, 'quiz', None, submission_id)
                     session['submission_id'] = submission_id
                     flash("Data saved successfully!", "success")
 
-                # Clear session on successful submission except submission_id
-                # session.clear()  # Commented to keep submission_id for tracking
-                url = request.url_root
-                share_message = f"I just discovered my ideal career path with this amazing quiz! Turns out I'm a {recommended_field} expert. What's yours? Take the quiz now: {url} and unlock your potential! #CareerDiscovery"
+                url = request.url_root + '?utm_source=linkedin'
+                share_message = f"🌟 I just took this incredible 'Know Your Skill' quiz and discovered my perfect career path! I'm a {recommended_field} expert. It’s a game-changer that helped me uncover my strengths and passions in just a few minutes. Curious about your ideal career? Take the quiz now at {url}"
                 return render_template('result.html', name=name, recommended_field=recommended_field, details=details, save_error=save_error, submission_id=submission_id, url=url, share_message=share_message)
             else:
-                # Store form data in session on validation failure
                 session['name'] = form.name.data
                 session['age'] = form.age.data
                 session['contact'] = form.contact.data
@@ -403,7 +387,6 @@ def quiz():
         except Exception as e:
             logger.error(f"Error in quiz route: {str(e)}")
             flash("An error occurred while processing your quiz. Please try again.", "danger")
-            # Store form data in session on exception
             session['name'] = form.name.data
             session['age'] = form.age.data
             session['contact'] = form.contact.data
@@ -412,10 +395,9 @@ def quiz():
             session['experience'] = form.experience.data
             session['interest_area'] = form.interest_area.data
             for i in range(1, 11):
-                session[f'q{i}'] = request.form.get(f'q{i}')
+                session[f'q{i}'] = request.form.get(f'q{i)')
             return render_template('quiz_bootstrap.html', form=form, questions=questions, question_options=question_options)
 
-    # Pre-fill form from session on GET or failed POST
     form.name.data = session.get('name', '')
     form.age.data = session.get('age', '')
     form.contact.data = session.get('contact', '')
