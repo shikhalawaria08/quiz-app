@@ -3,8 +3,8 @@ import gspread
 from google.oauth2.service_account import Credentials
 import os
 import json
-import datetime  # Updated for IST timestamps
-import pytz      # Added for timezone handling
+import datetime
+import pytz
 import logging
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, SelectField
@@ -395,7 +395,7 @@ def quiz():
             session['experience'] = form.experience.data
             session['interest_area'] = form.interest_area.data
             for i in range(1, 11):
-                session[f'q{i}'] = request.form.get(f'q{i)')
+                session[f'q{i}'] = request.form.get(f'q{i}')
             return render_template('quiz_bootstrap.html', form=form, questions=questions, question_options=question_options)
 
     form.name.data = session.get('name', '')
