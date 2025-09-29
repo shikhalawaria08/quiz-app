@@ -36,11 +36,20 @@
         .btn-secondary { 
             background-color: #6c757d; 
             border-color: #6c757d; 
-            margin-top: 20px;
+            margin-top: 10px;
         }
         .btn-secondary:hover { 
             background-color: #5a6268; 
             border-color: #5a6268; 
+        }
+        .btn-success { 
+            background-color: #28a745; 
+            border-color: #28a745; 
+            margin-top: 10px;
+        }
+        .btn-success:hover { 
+            background-color: #218838; 
+            border-color: #1e7e34; 
         }
     </style>
 </head>
@@ -63,10 +72,52 @@
                 </div>
             </div>
             <a href="/" class="btn btn-secondary w-100">Go Home</a>
+            <button id="shareBtn" class="btn btn-success w-100">Share Your Results</button>
         {% endif %}
     </div>
     <div class="contact-info">
         Created by Shikha Lawaria | Email: <a href="mailto:shikhalawaria08@gmail.com" style="color: #0056b3;">shikhalawaria08@gmail.com</a> | LinkedIn: <a href="https://linkedin.com/in/shikha-lawaria-812b972a2" target="_blank" style="color: #0056b3;">linkedin.com/in/shikha-lawaria-812b972a2</a>
     </div>
+    <script>
+        var shareMessage = "{{ share_message | safe }}";
+        var url = "{{ url }}";
+        var startTime = Date.now();
+
+        // Track time spent on page
+        window.addEventListener('beforeunload', function() {
+            var duration = (Date.now() - startTime) / 1000;  // in seconds
+            fetch('/log_time', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'duration=' + duration
+            });
+        });
+
+        // Share functionality
+        document.getElementById('shareBtn').addEventListener('click', function() {
+            // Log the share event first
+            fetch('/log_share', { method: 'POST' });
+
+            if (navigator.share) {
+                navigator.share({
+                    title: 'My Career Quiz Results',
+                    text: shareMessage,
+                    url: url
+                }).then(function() {
+                    console.log('Thanks for sharing!');
+                }).catch(function(error) {
+                    console.log('Error sharing: ' + error);
+                });
+            } else {
+                // Fallback: Copy to clipboard
+                navigator.clipboard.writeText(shareMessage).then(function() {
+                    alert('Results copied to clipboard! Paste and share on LinkedIn or anywhere to inspire your network.');
+                }).catch(function(error) {
+                    console.log('Error copying: ' + error);
+                    alert('Unable to copy. Please copy this manually: ' + shareMessage);
+                });
+            }
+        });
+    </script>
 </body>
 </html>
