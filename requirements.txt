@@ -1,5 +1,10 @@
-flask
-gspread
-google-auth
-flask-wtf
-pytz
+flask==3.0.3
+gspread==6.1.2
+google-auth==2.35.0
+google-auth-httplib2==0.2.0
+google-auth-oauthlib==1.2.1
+flask-wtf==1.2.1
+wtforms==3.1.2
+gunicorn==23.0.0
+email-validator==2.3.0
+pytz==2025.1
