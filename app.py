@@ -8,6 +8,7 @@ import logging  # Added for logging
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, SelectField
 from wtforms.validators import DataRequired, Email, NumberRange, Regexp
+import uuid  # Added for unique submission IDs
 
 app = Flask(__name__)
 app.secret_key = 'quiz_secret_key'  # For flash and forms
@@ -195,9 +196,22 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapi
 creds_info = json.loads(os.environ['GOOGLE_CREDENTIALS'])
 creds = Credentials.from_service_account_info(creds_info, scopes=SCOPES)
 client = gspread.authorize(creds)
+spreadsheet = client.open("Quiz responses")
+
+# Setup Analytics worksheet
+try:
+    analytics_sheet = spreadsheet.worksheet("Analytics")
+except gspread.WorksheetNotFound:
+    analytics_sheet = spreadsheet.add_worksheet(title="Analytics", rows="1000", cols="10")
+    analytics_sheet.append_row(["Timestamp", "Event_Type", "IP", "UTM_Source", "Duration", "Submission_ID", "Details"])
 
 # Recent submissions to prevent duplicates
 recent_submissions = {}
+
+def log_event(event_type, ip, utm_source, duration=None, submission_id=None, details=None):
+    timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
+    row = [timestamp, event_type, ip, utm_source, duration or '', submission_id or '', details or '']
+    analytics_sheet.append_row(row)
 
 # Define form with validations
 class QuizForm(FlaskForm):
@@ -217,6 +231,21 @@ class QuizForm(FlaskForm):
     ])
     interest_area = StringField('Interest Area', validators=[DataRequired()])
     submit = SubmitField('Submit')
+
+@app.route('/log_time', methods=['POST'])
+def log_time():
+    duration = request.form.get('duration')
+    submission_id = session.get('submission_id')
+    ip = request.remote_addr
+    log_event('time_spent', ip, '', duration, submission_id)
+    return 'OK'
+
+@app.route('/log_share', methods=['POST'])
+def log_share():
+    submission_id = session.get('submission_id')
+    ip = request.remote_addr
+    log_event('share', ip, '', None, submission_id, 'LinkedIn Share')
+    return 'OK'
 
 @app.route('/', methods=['GET', 'POST'])
 def quiz():
@@ -278,6 +307,11 @@ def quiz():
             "Evaluating investments", "Securing databases"]]
     ]
 
+    # Log visit on GET request
+    if request.method == 'GET':
+        utm_source = request.args.get('utm_source', 'direct')
+        log_event('visit', request.remote_addr, utm_source)
+
     if request.method == 'POST':
         try:
             if form.validate_on_submit():
@@ -301,6 +335,7 @@ def quiz():
                 recommended_field = max(votes, key=votes.get)
                 details = field_details[recommended_field]
                 current_time = time.time()
+                submission_id = str(uuid.uuid4())  # Generate unique ID for this submission
 
                 # Duplicate check
                 if client_ip in recent_submissions:
@@ -312,7 +347,6 @@ def quiz():
                         if last_hash == data_hash and current_time - last_time < 5:
                             save_error = "Duplicate submission detected. Data was not saved again."
                         else:
-                            spreadsheet = client.open("Quiz responses")
                             sheet = spreadsheet.worksheet("Quiz Responses")
                             row_data = [
                                 name, age, contact, email, profession, experience, interest_area,
@@ -326,9 +360,11 @@ def quiz():
                             ]
                             sheet.append_row(row_data)
                             recent_submissions[client_ip] = (current_time, data_hash)
+                            # Log submission
+                            log_event('submission', client_ip, 'quiz', None, submission_id)
+                            session['submission_id'] = submission_id
                             flash("Data saved successfully!", "success")
                 else:
-                    spreadsheet = client.open("Quiz responses")
                     sheet = spreadsheet.worksheet("Quiz Responses")
                     row_data = [
                         name, age, contact, email, profession, experience, interest_area,
@@ -342,11 +378,16 @@ def quiz():
                     ]
                     sheet.append_row(row_data)
                     recent_submissions[client_ip] = (current_time, hash(str(answers)))
+                    # Log submission
+                    log_event('submission', client_ip, 'quiz', None, submission_id)
+                    session['submission_id'] = submission_id
                     flash("Data saved successfully!", "success")
 
-                # Clear session on successful submission
-                session.clear()
-                return render_template('result.html', name=name, recommended_field=recommended_field, details=details, save_error=save_error)
+                # Clear session on successful submission except submission_id
+                # session.clear()  # Commented to keep submission_id for tracking
+                url = request.url_root
+                share_message = f"I just discovered my ideal career path with this amazing quiz! Turns out I'm a {recommended_field} expert. What's yours? Take the quiz now: {url} and unlock your potential! #CareerDiscovery"
+                return render_template('result.html', name=name, recommended_field=recommended_field, details=details, save_error=save_error, submission_id=submission_id, url=url, share_message=share_message)
             else:
                 # Store form data in session on validation failure
                 session['name'] = form.name.data
